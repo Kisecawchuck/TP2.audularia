@@ -11,5 +11,10 @@ int main(){
 
     printf("%d \n", convertermp3_wav(opt_Mario));
     printf("%d \n", converterwav_raw(opt_Mario));
+    printf("%d \n",converterraw_floats(opt_Mario));
+    for(int i = 0; i < opt_Mario->tamanho;i++){ 
+        printf("%f\n",opt_Mario->amostras[i]);
+    }
+    printf("%d \n",converterfloat_raw(opt_Mario));
     return 0;
 }

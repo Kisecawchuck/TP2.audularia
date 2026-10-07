@@ -20,9 +20,9 @@ int convertermp3_wav(Audio *p);
 
 int converterwav_raw(Audio *p);
 
-float *converterraw_floats(Audio *p);
+int converterraw_floats(Audio *p);
 
-//void converterfloat_raw(Audio *p);
+int converterfloat_raw(Audio *p);
 
 
 #endif

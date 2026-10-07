@@ -27,7 +27,7 @@ int converterwav_raw(Audio *audio){
 // Para isso, calculamos o número de bytes do binário resultante do arquivo .raw
 // e alocamos um vetor de floats na memória com base nesse número de bytes
 
-float *converterraw_floats(Audio *audio){
+int converterraw_floats(Audio *audio){
     char *caminho = audio->arquivo_raw;
     int *n = &audio->tamanho;
 
@@ -35,7 +35,7 @@ float *converterraw_floats(Audio *audio){
 
     if (!f){
         printf("Erro ao tentar abrir o arquivo!\n");
-        return NULL;
+        return 1;
     }
 
     // Faz o ponteiro que percorre o arquivo em sua leitura apontar para o final do arquivo (último byte)
@@ -49,31 +49,35 @@ float *converterraw_floats(Audio *audio){
     
     if(audio->amostras == NULL){
         printf("Erro na alocação do vetor de audio!\n");
-        return NULL;
+        return 1;
     }
 
     // Contamos quantos
     // fread salva os conteúdos de um arquivo dentro de um array e retorna a quantidade de elementos salvos. 
     *n = fread(audio->amostras, sizeof(float), bytes/sizeof(float), f);
     fclose(f);
-    return audio->amostras;
-
+    return 0;    
 }
 
 // Salva os floats de um vetor representando um áudio em um aruivo .raw
 // Uso: salvar_raw(../pasta/arquivo.raw, audio, tamanho_audio)  
-int salvar_raw(const char *caminho, const float *audio, int n){
+int converterfloat_raw(Audio *audio){
+    char *caminho = audio->arquivo_raw;
+    float *amostras = audio->amostras;
+    int n = audio->tamanho;
+
     FILE *f = fopen(caminho,"wb");
     if (!f){
         printf("Erro na escrita do arquivo!\n");
-        return -1;
+        return 1;
     }
-    int escritos = fwrite(audio, sizeof(float), n,f);
+    int escritos = fwrite(amostras, sizeof(float), n,f);
     fclose(f);
 
     if(escritos == n){
         return 0;
     }else{
-        return -1;
+        printf("Nem todos as amostras foram salvas corretamente!\n");
+        return 1;
     }
 }
