@@ -59,8 +59,7 @@ int converterraw_floats(Audio *audio){
     return 0;    
 }
 
-// Salva os floats de um vetor representando um áudio em um aruivo .raw
-// Uso: salvar_raw(../pasta/arquivo.raw, audio, tamanho_audio)  
+// Salva os floats de um vetor representando um áudio em um aruivo .raw  
 int converterfloat_raw(Audio *audio){
     char *caminho = audio->arquivo_raw;
     float *amostras = audio->amostras;
