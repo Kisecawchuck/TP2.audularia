@@ -5,7 +5,7 @@ CFLAGS = -Wall -Wextra -Iinclude -fPIC # flags de warning, onde procurar os arqu
 # Diretórios
 SRC_DIR = src
 BUILD_DIR = build
-LIB_DIR = lib
+INCLUDE_DIR = include
 BIN_DIR = bin
 TEST_DIR = test
 APP_DIR = app
@@ -18,4 +18,14 @@ OBJS = $(patsubst $(SRC_DIR)/*.c, $(BUILD_DIR)/*.o, $(SRCS)) # (Padrão ordige, 
 .PHONY: all clean install run test
 
 # Alvos
+
+
+all : $(BIN_DIR)/main_app $(BIN_DIR)/test_run
+
+# Compilação incremental
+$(BUILD_DIR)/%.o : $(SRC_DIR)/%.c
+	@mkdir -p $(BUILD_DIR)
+	$(cc) $(CFLAGS) -c $< -o $@ 
+
+$(BIN_DIR)/main_app : $(BUILD_DIR)/%.o	 
 
