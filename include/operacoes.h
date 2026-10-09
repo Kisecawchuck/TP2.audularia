@@ -4,12 +4,28 @@
 #include "audio.h"
 
 // documenta alterar_velocidade
-int alterar_velocidade(Audio *p);
-// documenta alterar_frequencia
-void alterar_frequencia(Audio *p);
-// documenta alterar_intensidade 
-void alterar_intensidade(Audio *p);
-// documenta mixar_audio
-void mixar_audio(Audio *p);
+/**
+ * @brief Altera a velocidade de um áudio com base no fator
+ * de alterção passado
+ * @param *p Um ponteiro para o áudio que queremos alterar
+ * @param fator Float que controla a velocidade da alteração
+ * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
+ * @pre fator > 0.0
+ * @post O vetor de amostras do áudio passado agora representa o 
+ * mesmo áudio mas em velocidade diferente
+ * @note fatores maiores que 1 aceleram o áudio, enquanto fatores
+ * menores que 1 e maiores que 0 o desaceleram
+*/
 
+int alterar_velocidade(Audio *p, float fator);
+
+// documenta alterar_frequencia
+//int alterar_frequencia(Audio *p);
+
+// documenta alterar_intensidade 
+int alterar_intensidade(Audio *p, float ganho);
+// documenta mixar_audio
+int mixar_audio(Audio *p, Audio *p1, Audio *p2, float ganho1, float ganho2);
+
+int cortar_audio(Audio *p, float segundo_inicial, float segundo_final);
 #endif

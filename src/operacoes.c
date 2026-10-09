@@ -51,4 +51,75 @@ int alterar_velocidade(Audio *audio,float fator){
     
     return 0;
 
+    }
+    // Pode diminuir a intensidade de cada áudio dependendo do ganho utilizado
+    int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2){
+        int maior_tamanho;
+        int menor_tamanho;
+        int tam_audio1 = audio1->tamanho;
+        int tam_audio2 = audio2->tamanho;
+
+        float menor_ganho = 1.0;
+        float maior_ganho = 1.0;
+
+    if(tam_audio2 < tam_audio1){
+        maior_tamanho = tam_audio1;
+    }
+    else{
+        maior_tamanho = tam_audio2;
+    }
+
+    float *mix = malloc(maior_tamanho * sizeof(float));
+    if(mix == NULL){
+        printf("Erro na alocação \n");
+        return 1;
+    }
+    int i = 0;
+    int j = 0;
+
+    while (i < tam_audio1 || j < tam_audio2)
+    {
+        if(i >= tam_audio1){
+            mix[j] = (ganho_audio2*audio2->amostras[j])/(ganho_audio1 + ganho_audio2);
+            j++;
+        }else if( j >= tam_audio2){
+            mix[i] = (ganho_audio1*audio1->amostras[i])/(ganho_audio1 + ganho_audio2);
+            i++;
+        }else{
+            mix[i] = (ganho_audio1*audio1->amostras[i] + ganho_audio2*audio2->amostras[i])/(ganho_audio1 + ganho_audio2);
+            i++;
+            j++;
+        }
+    }
+    
+   
+    audio_mixado->amostras = mix;
+    audio_mixado->tamanho = maior_tamanho;
+
+    return 0;
 }
+
+    int cortar_audio(Audio *audio, float segundo_inicial, float segundo_final){
+        
+        if(segundo_final > audio->tamanho/16000){
+            printf("O segundo final excede a duração do áudio \n");
+            return 1;
+        }
+
+        int m = (segundo_final - segundo_inicial)*16000;
+        float *audio_cortado = malloc(m * sizeof(float));
+        if(audio_cortado == NULL){
+            return 1;
+        }
+
+        int ini = (int)(segundo_inicial*16000);
+        int fim =  (int)(segundo_final*16000);
+
+        for(int i = (int)(segundo_inicial*16000); i < (int)(segundo_final*16000); i++){
+            audio_cortado[i - ini] = audio->amostras[i];
+        }
+
+        audio->tamanho = m;
+        audio->amostras = audio_cortado;
+        return 0;
+    }

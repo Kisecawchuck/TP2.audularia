@@ -28,6 +28,7 @@ int converterwav_raw(Audio *audio){
 // e alocamos um vetor de floats na memória com base nesse número de bytes
 
 int converterraw_floats(Audio *audio){
+    
     char *caminho = audio->arquivo_raw;
     int *n = &audio->tamanho;
 

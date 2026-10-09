@@ -11,10 +11,10 @@ typedef struct {
 } Audio;
 
 // cria a estrutura do tipo Audio e retorna;
-//void criar_audio();
+// void criar_audio();
 
 // libera a estrutura AUDIO
-//void destruir_audio(Audio *p);
+// void destruir_audio(Audio *p);
 
 int convertermp3_wav(Audio *p);
 
