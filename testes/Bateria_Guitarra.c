@@ -7,13 +7,14 @@ int main(){
     Audio BASS;
     Audio *opt_BASS = &BASS;
 
-    //Bateria.arquivo_mp3 = "../audio/Bateria1.mp3";
+    //BASS.arquivo_mp3 = "../audio/Bateria1.mp3";
     BASS.arquivo_wav = "../audio/BASS.wav";
     BASS.arquivo_raw = "../audio/BASS.raw";
 
     //printf("%d \n", convertermp3_wav(opt_Mario));
     printf("%d \n", converterwav_raw(opt_BASS));
     printf("%d \n",converterraw_floats(opt_BASS));
+    cortar_audio(opt_BASS, 0, 20);
 
     Audio GTR;
     Audio *opt_GTR = &GTR;
@@ -26,7 +27,7 @@ int main(){
     //printf("%d \n", convertermp3_wav(opt_GTR));
     printf("%d \n", converterwav_raw(opt_GTR));
     printf("%d \n",converterraw_floats(opt_GTR));
-
+    cortar_audio(opt_GTR,0,20);
 
     Audio DRUMS;
     Audio *opt_DRUMS = &DRUMS;
@@ -40,11 +41,14 @@ int main(){
     converterwav_raw(opt_DRUMS);
     converterraw_floats(opt_DRUMS);
 
+    cortar_audio(opt_DRUMS, 3, 23);
+    
     Audio novo_mix;
     Audio *opt_novo_mix = &novo_mix;
+    
+    mixar_audio(opt_novo_mix,opt_DRUMS,opt_GTR,0.5,1.1,0.0,20.0,40);
 
-    mixar_audio(opt_novo_mix,opt_DRUMS,opt_GTR,1.1,0.7);
-    mixar_audio(opt_novo_mix,opt_novo_mix,opt_BASS,1.0,0.6);
+    //mixar_audio(opt_novo_mix,opt_BASS,opt_novo_mix,0.4,1.1,0,0,40);
     opt_novo_mix->arquivo_raw = "../audio/novo_mix.raw";
 
     //alterar_velocidade(opt_novo_mix,2.0);

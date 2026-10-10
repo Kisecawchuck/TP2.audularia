@@ -4,6 +4,7 @@
 #include"../include/operacoes.h"
 
 int alterar_intensidade(Audio *audio, float ganho){
+    
     int n = audio->tamanho;
     for(int i = 0; i < n; i++){
 
@@ -52,52 +53,64 @@ int alterar_velocidade(Audio *audio,float fator){
     return 0;
 
     }
+
     // Pode diminuir a intensidade de cada áudio dependendo do ganho utilizado
-    int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2){
-        int maior_tamanho;
-        int menor_tamanho;
-        int tam_audio1 = audio1->tamanho;
-        int tam_audio2 = audio2->tamanho;
 
-        float menor_ganho = 1.0;
-        float maior_ganho = 1.0;
+    int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
+        float ini_ad2, float duracao){
 
-    if(tam_audio2 < tam_audio1){
-        maior_tamanho = tam_audio1;
-    }
-    else{
-        maior_tamanho = tam_audio2;
+    if(ini_ad1 < 0  || ini_ad2 < 0){
+        printf("Segundo de ínicio inváildo, ele deve ser maior que 0!\n");
+        return 1;
     }
 
-    float *mix = malloc(maior_tamanho * sizeof(float));
+    if(duracao < 0){
+        printf("Duração inválida, ela deve ser maior que 0!\n");
+    }
+    
+    int tam_audio1 = audio1->tamanho;
+    int tam_audio2 = audio2->tamanho;
+    int fim_ad2 = ini_ad2*16000 + tam_audio2;
+    int fim_ad1 = ini_ad1*16000 + tam_audio1;
+    int tam_audiofinal = duracao*16000;
+    
+    if(fim_ad1 > tam_audiofinal || fim_ad2 > tam_audiofinal){
+        printf("Essa mixagem excederá o tamanho do áudio final!\n");
+        return 1;
+    }
+
+    float *mix = malloc(tam_audiofinal * sizeof(float));
+
     if(mix == NULL){
         printf("Erro na alocação \n");
         return 1;
     }
-    int i = 0;
-    int j = 0;
 
-    while (i < tam_audio1 || j < tam_audio2)
-    {
-        if(i >= tam_audio1){
-            mix[j] = (ganho_audio2*audio2->amostras[j])/(ganho_audio1 + ganho_audio2);
-            j++;
-        }else if( j >= tam_audio2){
-            mix[i] = (ganho_audio1*audio1->amostras[i])/(ganho_audio1 + ganho_audio2);
-            i++;
-        }else{
-            mix[i] = (ganho_audio1*audio1->amostras[i] + ganho_audio2*audio2->amostras[i])/(ganho_audio1 + ganho_audio2);
-            i++;
-            j++;
-        }
+    int i=0;
+    float parte_ad1;
+    float parte_ad2;
+
+    while(i < tam_audiofinal){
+     
+        if( ini_ad1*16000 <= i && i < fim_ad1 ){
+            parte_ad1 = (ganho_audio1*audio1->amostras[(int)(i-ini_ad1*16000)])/(ganho_audio1 + ganho_audio2);
+        }else parte_ad1 = 0.0;
+
+        if (ini_ad2*16000 <= i && i < fim_ad2){
+            parte_ad2 = (ganho_audio2*audio2->amostras[(int)(i-ini_ad2*16000)])/(ganho_audio1 + ganho_audio2);
+        }else parte_ad2 = 0.0;
+
+        mix[i] = parte_ad1 + parte_ad2;
+        i++;
     }
-    
-   
+  
     audio_mixado->amostras = mix;
-    audio_mixado->tamanho = maior_tamanho;
+    audio_mixado->tamanho = tam_audiofinal;
 
     return 0;
-}
+
+
+    }
 
     int cortar_audio(Audio *audio, float segundo_inicial, float segundo_final){
         
@@ -123,3 +136,5 @@ int alterar_velocidade(Audio *audio,float fator){
         audio->amostras = audio_cortado;
         return 0;
     }
+
+    // Fazer uma função que escolhe em qual segundo do áudio 1 encaixaremos o áudio 2

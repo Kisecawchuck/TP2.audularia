@@ -8,6 +8,7 @@ typedef struct {
     char *arquivo_wav;
     char *arquivo_raw;
     int tamanho;
+    
 } Audio;
 
 // cria a estrutura do tipo Audio e retorna;

@@ -25,7 +25,9 @@ int alterar_velocidade(Audio *p, float fator);
 // documenta alterar_intensidade 
 int alterar_intensidade(Audio *p, float ganho);
 // documenta mixar_audio
-int mixar_audio(Audio *p, Audio *p1, Audio *p2, float ganho1, float ganho2);
 
 int cortar_audio(Audio *p, float segundo_inicial, float segundo_final);
+
+int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
+        float ini_ad2, float duracao);
 #endif
