@@ -81,3 +81,24 @@ int converterfloat_raw(Audio *audio){
         return 1;
     }
 }
+
+int converteraw_wav(Audio *audio){
+    char cmd[1024];
+
+    char *entrada = audio->arquivo_raw;
+    char *saida = audio->arquivo_wav;
+
+    snprintf(cmd, sizeof(cmd), "ffmpeg -f f32le -ar 16000 -ac 1 -i \"%s\" \"%s\"", entrada, saida);
+    return system(cmd);
+}
+
+
+int converterwav_mp3(Audio *audio){
+    char cmd[1024];
+
+    char *entrada = audio->arquivo_wav;
+    char *saida = audio->arquivo_mp3;
+
+    snprintf(cmd, sizeof(cmd), "ffmpeg  -i \"%s\" \"%s\"", entrada, saida);
+    return system(cmd);
+}

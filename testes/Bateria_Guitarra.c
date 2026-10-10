@@ -46,13 +46,17 @@ int main(){
     Audio novo_mix;
     Audio *opt_novo_mix = &novo_mix;
     
-    mixar_audio(opt_novo_mix,opt_DRUMS,opt_GTR,0.5,1.1,0.0,20.0,40);
-
+    mixar_audio(opt_novo_mix,opt_DRUMS,opt_GTR,0.5,1.1,3,0,40);
     //mixar_audio(opt_novo_mix,opt_BASS,opt_novo_mix,0.4,1.1,0,0,40);
+    
     opt_novo_mix->arquivo_raw = "../audio/novo_mix.raw";
-
+    opt_novo_mix->arquivo_wav = "../audio/novo_wav.wav";
+    opt_novo_mix->arquivo_mp3 = "../audio/novo_mp3.mp3";
     //alterar_velocidade(opt_novo_mix,2.0);
     converterfloat_raw(opt_novo_mix);
+    converteraw_wav(opt_novo_mix);
+    converterwav_mp3(opt_novo_mix);
+
     system("ffplay -f f32le -ar 16000 -ch_layout mono ../audio/novo_mix.raw");
 
     free(opt_BASS->amostras);
