@@ -156,21 +156,21 @@ Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw){
 
 
 int destroi_audio(Audio *audio,int opcao){
-    if (opcao == 4 || opcao == 5 || opcao == 6 ){
+    if (opcao == 4 || opcao == 5 || opcao == 6 || opcao == 7 ){
         if(remove(audio->arquivo_mp3) == -1){
             printf("Não foi possível remover o .mp3\n");
             return 1;
         }
     }
 
-    if (opcao == 1 || opcao == 5 || opcao == 3 ){
+    if (opcao == 1 || opcao == 5 || opcao == 3 || opcao == 7){
         if(remove(audio->arquivo_raw) == -1){
             printf("Não foi possível remover o .raw\n");
             return 1;
         }
     }
 
-    if (opcao == 2 || opcao == 6 || opcao == 3 ){
+    if (opcao == 2 || opcao == 6 || opcao == 3 || opcao == 7){
         if(!remove(audio->arquivo_wav) == -1){
             printf("Não foi possível remover o .wav\n");
             return 1;

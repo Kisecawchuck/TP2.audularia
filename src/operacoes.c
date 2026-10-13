@@ -156,5 +156,19 @@ int alterar_velocidade(Audio *audio,float fator){
         audio->amostras = audio_cortado;
         return 0;
     }
+    int inverter_audio(Audio *audio){
+        int tam_audio = audio->tamanho;
+        float *audio_invertido = malloc(tam_audio*sizeof(float));
+        int j = tam_audio-1;
+        
+        for(int i=0;i < tam_audio;i++){
+            audio_invertido[j] = audio->amostras[i];
+            j--;
+        }
 
+        audio->amostras = audio_invertido;
+        return 1;
+        
+    }
+    
     // Fazer uma função que escolhe em qual segundo do áudio 1 encaixaremos o áudio 2
