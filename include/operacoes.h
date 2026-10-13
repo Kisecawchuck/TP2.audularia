@@ -17,8 +17,6 @@
  * menores que 1 e maiores que 0 o desaceleram
 */
 
-int inverter_audio(Audio *audio);
-
 int alterar_velocidade(Audio *p, float fator);
 
 // documenta alterar_frequencia
@@ -32,6 +30,4 @@ int cortar_audio(Audio *p, float segundo_inicial, float segundo_final);
 
 int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
         float ini_ad2, float duracao);
-
-
 #endif
