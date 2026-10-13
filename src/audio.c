@@ -175,7 +175,6 @@ int destroi_audio(Audio *audio,int opcao){
             printf("Não foi possível remover o .wav\n");
             return 1;
         }
-
     }
     
     free(audio->amostras);

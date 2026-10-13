@@ -68,8 +68,8 @@ int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_a
  * @param 
  * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
  * @pre audio->amostras != NULL
- * @pre 0.0 <= segundo inicial <= audio->tamanho
- * @pre 0.0 <= segundo_final <= audio->tamanho
+ * @pre 0.0 <= segundo inicial <= audio_mixado->tamanho
+ * @pre 0.0 <= segundo_final <= audio_mixado->tamanho
  * @post O vetor de amostras do áudio passado agora representa 
  * apenas um trecho do áudio original com base no intervalo
  * passado como parâmetro.
