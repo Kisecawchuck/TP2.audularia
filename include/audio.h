@@ -13,9 +13,18 @@ typedef struct {
 
 
 // Essas funções usam a bilbioteca ffmpeg do bash e só estão aqui 
-// para vconversão dos arquivos com que iremos trabalhar, não as implementamos: 
-
+// para conversão dos arquivos com que iremos trabalhar, não as implementamos: 
+/**
+ * @brief Converte um arquivo .mp3 para um arquivo .wav
+ * @param *audio Um ponteiro para o áudio que queremos alterar
+ * @return 0 se a conversão foi bem-sucedida e 1 caso contrário
+ * @pre audio->arquivo_mp3 != NULL
+ * @pre audio->arquivo_wav != NULL
+ * @post arquivo .wav criado com base no .mp3 no endereço que
+ * definimos em audio->arquivo->wav
+*/
 int convertermp3_wav(Audio *p);
+
 
 int converterwav_raw(Audio *p);
 
