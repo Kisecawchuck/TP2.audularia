@@ -80,7 +80,7 @@ int converterraw_floats(Audio *audio){
     return 0;    
 }
 
-// Salva os floats de um vetor representando um áudio em um aruivo .raw  
+// Salva os floats de um vetor representando um áudio em um arquivo .raw  
 int converterfloat_raw(Audio *audio){
 
     char *caminho = audio->arquivo_raw;
@@ -229,8 +229,8 @@ int destroi_audio(Audio *audio,int opcao, int din){
 // representação nesses três formatos. Caso todas as conversões tenham sido bem-sucedidas, renomeamos os arquivos temporários para 
 int atualizar_audio(Audio *audio){
 
-    if(audio->amostras == NULL){
-        printf("Representação do áudio em forma de array inválida\n");
+    if(audio == NULL || audio->amostras == NULL ){
+        printf("Erro, áudio ou amostras do áudio inválidos\n");
         return 1;
     }
 
