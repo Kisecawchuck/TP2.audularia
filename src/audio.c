@@ -27,10 +27,6 @@ int converterwav_raw(Audio *audio){
 // e alocamos um vetor de floats na memória com base nesse número de bytes
 
 int converterraw_floats(Audio *audio){
-    if (audio == NULL || audio->arquivo_raw == NULL){
-        printf("Erro, áudio ou arquivo .raw inválidos\n");
-        return 1;
-    }
 
     char *caminho = audio->arquivo_raw;
     int n;
@@ -86,11 +82,6 @@ int converterraw_floats(Audio *audio){
 
 // Salva os floats de um vetor representando um áudio em um aruivo .raw  
 int converterfloat_raw(Audio *audio){
-
-    if(audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
-        printf("Erro, o áudio e ou suas amostras passados como parâmetro são inválidos\n");
-        return 1;
-    }
 
     char *caminho = audio->arquivo_raw;
     float *amostras = audio->amostras;

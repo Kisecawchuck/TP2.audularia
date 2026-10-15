@@ -5,6 +5,11 @@
 
 int alterar_intensidade(Audio *audio, float ganho){
 
+    if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
+            printf("Erro, áudio ou amostras do áudio inválidos \n");
+            return 1;
+        }
+
     if(ganho < 0){
         printf("Fator de ganho inválido, ele deve ser maior que 0\n");
         return 1;
@@ -31,6 +36,11 @@ int alterar_intensidade(Audio *audio, float ganho){
 
 int alterar_velocidade(Audio *audio,float fator){
 
+    if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
+            printf("Erro, áudio ou amostras do áudio inválidos \n");
+            return 1;
+        }
+
     if(fator < 0){
         printf("Fator de velocidade inválido, ele deve ser maior que 0\n");
         return 1;
@@ -40,6 +50,12 @@ int alterar_velocidade(Audio *audio,float fator){
     int m = (int)(n/fator);
 
     float *aux = malloc(m * sizeof(float));
+    
+    if (aux == NULL){
+        printf("Erro na alocação \n");
+        return 1;
+    }
+
     if (!aux) return 1;
     
     for(int i = 0; i < m;i++){
@@ -70,6 +86,16 @@ int alterar_velocidade(Audio *audio,float fator){
     // Pode diminuir a intensidade de cada áudio dependendo do ganho utilizado
     int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
         float ini_ad2, float duracao){
+
+    if (audio_mixado == NULL || audio1 == NULL || audio2 <= 0){
+            printf("Erro, áudios inválidos \n");
+            return 1;
+        }
+    
+    if (audio1->amostras == NULL || audio2->amostras == NULL){
+            printf("Erro, amostras de algum dos áudios inválidas \n");
+            return 1;
+        } 
     
     if(ganho_audio1 < 0 || ganho_audio2 < 0){
         printf("Ganho de áudio inválido, ele deve ser maior que 0\n");
@@ -130,14 +156,37 @@ int alterar_velocidade(Audio *audio,float fator){
     
     int cortar_audio(Audio *audio, float segundo_inicial, float segundo_final){
         
-        if(segundo_final > audio->tamanho/16000){
+        if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
+            printf("Erro, áudio ou amostras do áudio inválidos \n");
+            return 1;
+        }
+
+        if (segundo_final <= 0 || segundo_inicial < 0){
+            printf("Erro, uso: segundo_final > 0; segundo inicial >=0 ");
+            return 1;
+        }
+
+        if(segundo_final <= segundo_inicial){
+            printf("Erro, uso: segundo final > segundo_incial");
+            return 1;
+        }
+        
+        if(segundo_final*16000 > audio->tamanho){
             printf("O segundo final excede a duração do áudio \n");
             return 1;
         }
 
         int m = (segundo_final - segundo_inicial)*16000;
-        float *audio_cortado = malloc(m * sizeof(float));
+
+        if(m <= 0){
+            printf("Trecho cortado vazio com o segundo_incial e segundo_final passados como parametro\n");
+            return 1;
+        }
+
+        float *audio_cortado = malloc(m * sizeof(float))
+        ;
         if(audio_cortado == NULL){
+            printf("Erro na alocação \n");
             return 1;
         }
 
@@ -147,25 +196,33 @@ int alterar_velocidade(Audio *audio,float fator){
         for(int i = ini; i < fim; i++){
             audio_cortado[i - ini] = audio->amostras[i];
         }
-
+        
+        free(audio->amostras);
         audio->tamanho = m;
         audio->amostras = audio_cortado;
         return 0;
     }
 
     int inverter_audio(Audio *audio){
-
-        int tam_audio = audio->tamanho;
-        float *audio_invertido = malloc(tam_audio*sizeof(float));
-        int j = tam_audio-1;
         
-        for(int i=0;i < tam_audio;i++){
-            audio_invertido[j] = audio->amostras[i];
-            j--;
+        if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
+            printf("Erro, áudio ou amostras do áudio inválidos \n");
+            return 1;
         }
 
-        audio->amostras = audio_invertido;
-        return 1;
+        int tam_audio = audio->tamanho;
+        int i = 0;
+        int j = tam_audio-1;
+
+        while(i < j){
+            float tmp = audio->amostras[i];
+            audio->amostras[i] = audio->amostras[j];
+            audio->amostras[j] = tmp;
+            i++;
+            j--;
+        } 
+
+        return 0;
         
     }
     
