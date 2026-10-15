@@ -87,7 +87,7 @@ int alterar_velocidade(Audio *audio,float fator){
     int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
         float ini_ad2, float duracao){
 
-    if (audio_mixado == NULL || audio1 == NULL || audio2 <= 0){
+    if (audio_mixado == NULL || audio1 == NULL || audio2 == NULL){
             printf("Erro, áudios inválidos \n");
             return 1;
         }
@@ -97,7 +97,7 @@ int alterar_velocidade(Audio *audio,float fator){
             return 1;
         } 
     
-    if(ganho_audio1 < 0 || ganho_audio2 < 0){
+    if(ganho_audio1 <= 0 || ganho_audio2 <= 0){
         printf("Ganho de áudio inválido, ele deve ser maior que 0\n");
         return 1;
     }
@@ -133,15 +133,17 @@ int alterar_velocidade(Audio *audio,float fator){
     int i=0;
     float parte_ad1;
     float parte_ad2;
+    int ini1 = ini_ad1*16000;
+    int ini2 = ini_ad2*16000;
 
     while(i < tam_audiofinal){
      
-        if( ini_ad1*16000 <= i && i < fim_ad1 ){
-            parte_ad1 = (ganho_audio1*audio1->amostras[(int)(i-ini_ad1*16000)])/(ganho_audio1 + ganho_audio2);
+        if( ini1 <= i && i < fim_ad1 ){
+            parte_ad1 = (ganho_audio1*audio1->amostras[(i-ini1)])/(ganho_audio1 + ganho_audio2);
         }else parte_ad1 = 0.0;
 
-        if (ini_ad2*16000 <= i && i < fim_ad2){
-            parte_ad2 = (ganho_audio2*audio2->amostras[(int)(i-ini_ad2*16000)])/(ganho_audio1 + ganho_audio2);
+        if (ini2 <= i && i < fim_ad2){
+            parte_ad2 = (ganho_audio2*audio2->amostras[(i-ini2)])/(ganho_audio1 + ganho_audio2);
         }else parte_ad2 = 0.0;
 
         mix[i] = parte_ad1 + parte_ad2;
@@ -204,7 +206,7 @@ int alterar_velocidade(Audio *audio,float fator){
     }
 
     int inverter_audio(Audio *audio){
-        
+
         if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
             printf("Erro, áudio ou amostras do áudio inválidos \n");
             return 1;

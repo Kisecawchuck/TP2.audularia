@@ -2,19 +2,49 @@
 #include<stdlib.h>
 #include"../include/audio.h"
 
+int arquivo_existe(char *caminho){
+    FILE *file = fopen(caminho, "r");
+    if(file == NULL) return 1;
+    fclose(file);
+    return 0;
+}
+
 int convertermp3_wav(Audio *audio){
-    char cmd[1024];
+
+    if(audio == NULL || audio->arquivo_mp3 == NULL){
+        printf("Erro, áudio ou arquivo .mp3 inválidos\n");
+        return 1;
+    }
 
     char *entrada = audio->arquivo_mp3;
+    if(arquivo_existe(entrada) == 1){
+        printf("Erro arquivo .mp3 não existe\n");
+        return 1;
+    }
+
+    char cmd[1024];
     char *saida = audio->arquivo_wav;
 
     snprintf(cmd, sizeof(cmd), "ffmpeg -i \"%s\" \"%s\"", entrada, saida);
     return system(cmd);
 }
+
 // Converte um arquivo .wav em .raw usando o ffmpeg
 int converterwav_raw(Audio *audio){
-    char cmd[1024];
+    
+    if(audio == NULL || audio->arquivo_wav == NULL){
+        printf("Erro, áudio ou arquivo .wav inválidos\n");
+        return 1;
+    }
+
     char *entrada = audio->arquivo_wav;
+    
+    if(arquivo_existe(entrada) == 1){
+        printf("Erro arquivo .wav não existe\n");
+        return 1;
+    }
+
+    char cmd[1024];
     char *saida = audio->arquivo_raw;
 
     snprintf(cmd, sizeof(cmd),
@@ -27,8 +57,19 @@ int converterwav_raw(Audio *audio){
 // e alocamos um vetor de floats na memória com base nesse número de bytes
 
 int converterraw_floats(Audio *audio){
+    
+    if(audio == NULL || audio->arquivo_raw == NULL){
+        printf("Erro, áudio ou arquivo .raw inválidos\n");
+        return 1;
+    }
 
     char *caminho = audio->arquivo_raw;
+
+    if(arquivo_existe(caminho) == 1){
+            printf("Erro arquivo .mp3 não existe\n");
+            return 1;
+        }
+
     int n;
 
     FILE *f = fopen(caminho, "rb");
@@ -83,6 +124,11 @@ int converterraw_floats(Audio *audio){
 // Salva os floats de um vetor representando um áudio em um arquivo .raw  
 int converterfloat_raw(Audio *audio){
 
+    if(audio == NULL || audio->amostras == NULL){
+        printf("Erro, áudio ou amostras do áudio inválidos\n");
+        return 1;
+    }
+
     char *caminho = audio->arquivo_raw;
     float *amostras = audio->amostras;
     int n = audio->tamanho;
@@ -99,13 +145,24 @@ int converterfloat_raw(Audio *audio){
         printf("Nem todos as amostras foram salvas corretamente!\n");
         return 1;
     }
+    
     return 0;
 }
 
 int converteraw_wav(Audio *audio){
-    char cmd[1024];
+    if(audio == NULL || audio->arquivo_raw == NULL){
+        printf("Erro, áudio ou arquivo .raw inválidos\n");
+        return 1;
+    }
 
     char *entrada = audio->arquivo_raw;
+    
+    if(arquivo_existe(entrada) == 1){
+        printf("Erro arquivo .raw não existe\n");
+        return 1;
+    }
+
+    char cmd[1024];
     char *saida = audio->arquivo_wav;
 
     snprintf(cmd, sizeof(cmd), "ffmpeg -f f32le -ar 16000 -ac 1 -i \"%s\" \"%s\"", entrada, saida);
@@ -113,20 +170,26 @@ int converteraw_wav(Audio *audio){
 }
 
 int converterwav_mp3(Audio *audio){
-    char cmd[1024];
+
+    if(audio == NULL || audio->arquivo_wav == NULL){
+        printf("Erro, áudio ou arquivo .wav inválidos\n");
+        return 1;
+    }
 
     char *entrada = audio->arquivo_wav;
+    if(arquivo_existe(entrada) == 1){
+        printf("Erro arquivo .wav não existe\n");
+        return 1;
+    }
+
+    char cmd[1024];
     char *saida = audio->arquivo_mp3;
 
     snprintf(cmd, sizeof(cmd), "ffmpeg  -i \"%s\" \"%s\"", entrada, saida);
     return system(cmd);
 }
 
-int arquivo_existe(char *caminho){
-    FILE *file = fopen(caminho, "r");
-    if(file == NULL) return 1;
-    return 0;
-}
+
 
 // Por padrão o .mp3 deve existir, se não existir é só converter ele usando um convertewav ou converteraw
 Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw){
