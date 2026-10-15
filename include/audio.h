@@ -147,9 +147,10 @@ int atualizar_audio(Audio *audio);
 /**
  * @brief Libera o espaço alocado por audio
  * @param audio ponteiro para um objeto do tipo Audio
- * @return não retorna nada (void)
+ * @return 1 caso a alocação não ponteiros para as amostras ou 
+ * para o audio sejam in válidos (== NULL)
 */
 
-void destroi_audio(Audio *audio);
+int destroi_audio(Audio *audio);
 
 #endif

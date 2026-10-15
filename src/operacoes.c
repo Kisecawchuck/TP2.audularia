@@ -6,12 +6,12 @@
 int alterar_intensidade(Audio *audio, float ganho){
 
     if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
-            printf("Erro, áudio ou amostras do áudio inválidos \n");
+            printf("alterar_intensidade: erro, áudio ou amostras do áudio inválidos \n");
             return 1;
         }
 
     if(ganho < 0){
-        printf("Fator de ganho inválido, ele deve ser maior que 0\n");
+        printf("alterar_intensidade: erro, fator de ganho inválido, ele deve ser maior que 0\n");
         return 1;
     }
 
@@ -37,12 +37,12 @@ int alterar_intensidade(Audio *audio, float ganho){
 int alterar_velocidade(Audio *audio,float fator){
 
     if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
-        printf("Erro, áudio ou amostras do áudio inválidos \n");
+        printf("alterar_velocidade: erro, áudio ou amostras do áudio inválidos \n");
         return 1;
     }
 
     if(fator <= 0){
-        printf("Fator de velocidade inválido, ele deve ser maior que 0\n");
+        printf("alterar_velocidade: fator de velocidade inválido, ele deve ser maior que 0\n");
         return 1;
     }
 
@@ -50,7 +50,7 @@ int alterar_velocidade(Audio *audio,float fator){
     int m = (int)(n/fator);
 
     if(m < 1){
-        printf("Erro, o fator passado torna o tamanho do áudio final inválido \n");
+        printf("alterar_velocidade: erro, o fator passado torna o tamanho do áudio final inválido \n");
         return 1;
     }
     float *aux = malloc(m * sizeof(float));
@@ -91,22 +91,22 @@ int alterar_velocidade(Audio *audio,float fator){
 
     
     if (audio1->amostras == NULL || audio2->amostras == NULL){
-            printf("Erro, amostras de algum dos áudios inválidas \n");
+            printf("mixar_audio: erro, amostras de algum dos áudios inválidas \n");
             return 1;
         } 
     
     if(ganho_audio1 <= 0 || ganho_audio2 <= 0){
-        printf("Ganho de áudio inválido, ele deve ser maior que 0\n");
+        printf("mixar_audio: erro, ganho de áudio inválido, ele deve ser maior que 0\n");
         return 1;
     }
 
     if(ini_ad1 < 0  || ini_ad2 < 0){
-        printf("Segundo de ínicio inváildo, ele deve ser maior que 0\n");
+        printf("mixar_audio: erro, segundo de ínicio inváildo, ele deve ser maior que 0\n");
         return 1;
     }
 
     if(duracao < 0){
-        printf("Duração inválida, ela deve ser maior que 0\n");
+        printf("mixar_audio: erro, duração inválida, ela deve ser maior que 0\n");
         return 1;
     }
 
@@ -121,7 +121,7 @@ int alterar_velocidade(Audio *audio,float fator){
     int tam_audiofinal = duracao*16000;
     
     if(fim_ad1 > tam_audiofinal || fim_ad2 > tam_audiofinal){
-        printf("Essa mixagem excederá o tamanho do áudio final!\n");
+        printf("mixar_audio: erro, esa mixagem excederá o tamanho do áudio final!\n");
         return 1;
     }
 
@@ -160,29 +160,29 @@ int alterar_velocidade(Audio *audio,float fator){
     int cortar_audio(Audio *audio, float segundo_inicial, float segundo_final){
         
         if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
-            printf("Erro, áudio ou amostras do áudio inválidos \n");
+            printf("cortar_audio: erro, áudio ou amostras do áudio inválidos \n");
             return 1;
         }
 
         if (segundo_final <= 0 || segundo_inicial < 0){
-            printf("Erro, uso: segundo_final > 0; segundo inicial >=0 ");
+            printf("coratr_audio: erro, uso: segundo_final > 0; segundo inicial >=0 ");
             return 1;
         }
 
         if(segundo_final <= segundo_inicial){
-            printf("Erro, uso: segundo final > segundo_incial");
+            printf("cortar_audio: erro, uso: segundo final > segundo_incial");
             return 1;
         }
         
         if(segundo_final*16000 > audio->tamanho){
-            printf("O segundo final excede a duração do áudio \n");
+            printf("cortar_audio: erro segundo final excede a duração do áudio \n");
             return 1;
         }
 
         int m = (segundo_final - segundo_inicial)*16000;
 
         if(m <= 0){
-            printf("Trecho cortado vazio com o segundo_incial e segundo_final passados como parametro\n");
+            printf("cortar_audio: erro trecho cortado vazio com o segundo_incial e segundo_final passados como parametro\n");
             return 1;
         }
 
@@ -209,7 +209,7 @@ int alterar_velocidade(Audio *audio,float fator){
     int inverter_audio(Audio *audio){
 
         if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
-            printf("Erro, áudio ou amostras do áudio inválidos \n");
+            printf("inverter_audio: erro, áudio ou amostras do áudio inválidos \n");
             return 1;
         }
 
