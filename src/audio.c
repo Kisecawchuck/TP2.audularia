@@ -65,7 +65,7 @@ int converterraw_floats(Audio *audio){
     char *caminho = audio->arquivo_raw;
 
     if(arquivo_existe(caminho) == 1){
-            printf("Erro arquivo .mp3 não existe\n");
+            printf("Erro arquivo .raw não existe\n");
             return 1;
         }
 
@@ -188,9 +188,8 @@ int converterwav_mp3(Audio *audio){
     return system(cmd);
 }
 
-
-
 // Por padrão o .mp3 deve existir, se não existir é só converter ele usando um convertewav ou converteraw
+
 Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw){
 
     Audio *opt_novo_audio = malloc(sizeof (Audio));
@@ -203,59 +202,18 @@ Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw){
     opt_novo_audio->arquivo_wav = arquivo_wav;
     opt_novo_audio->arquivo_raw = arquivo_raw;
 
-    int existe[3] = {0,0,0}; 
-    
-    if(arquivo_existe(arquivo_mp3) == 0) existe[0] = 1;
-
-    if(arquivo_existe(arquivo_wav) == 0) existe[1] = 1;
-
-    if(arquivo_existe(arquivo_raw) == 0) existe[2] = 1;
-
-    if(existe[0] == 0 && existe[1] == 0){
-        printf("Sem arquivo .mp3 ou .wav\n");
-        free(opt_novo_audio);
-        return NULL;
-    }
-
-    if(existe[0] == 0 ){
-            if(converterwav_mp3(opt_novo_audio) != 0){
-                printf("Não foi possível converter o .wav em .mp3\n");
-                free(opt_novo_audio);
-                return NULL;
-            }
-        }
-
-    if(existe[1] == 0){
-        if(convertermp3_wav(opt_novo_audio) != 0){
-            printf("Não foi possível coverter o .mp3 em .wav\n");
-            free(opt_novo_audio);
-            return NULL;
-        }
-    }
-
-    if(existe[2] == 0){
-
-        if(converterwav_raw(opt_novo_audio)){
-            printf("Não foi possível converter o .wav em .raw\n");
-            free(opt_novo_audio);
-            return NULL;
-        }
-    }
-
-    if(converterraw_floats(opt_novo_audio) != 0 ){
-        printf("Não foi possível converter o .raw em um array de amostras\n");
-        free(opt_novo_audio);
-        return NULL;
-    }
-    
     return opt_novo_audio;
 }
 // mp3 : 4
 // wav : 2 
 // raw : 1
 
+void destroi_audio(Audio *audio){
+    free(audio->amostras);
+    free(audio);
+}
 
-int destroi_audio(Audio *audio,int opcao, int din){
+int remove_arquivos(Audio *audio,int opcao){
     int erro = 0;
 
     if (opcao == 4 || opcao == 5 || opcao == 6 || opcao == 7 ){
@@ -278,11 +236,6 @@ int destroi_audio(Audio *audio,int opcao, int din){
             erro = 1;
         }
     }
-    
-    
-    free(audio->amostras);
-
-    if(din == 1) free(audio);
 
     return erro;
 }
@@ -329,7 +282,6 @@ int atualizar_audio(Audio *audio){
             printf("Erro na renomeação dos arquivos temporárioas\n");
         }
     }
-
 
     if(erro == 1){
         remove(audio->arquivo_mp3);

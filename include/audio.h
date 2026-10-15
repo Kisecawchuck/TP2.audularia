@@ -102,25 +102,21 @@ int converterfloat_raw(Audio *p);
  * @param arquivo_wav caminho do arquivo .wav
  * @param arquivo_raw caminho do arquivo .raw 
  * @return Um objeto do tipo Audio que representa o arquivo de áudio passado como
- * parametro e já com todos os arquivos no formato necessário para as operações 
- * de processamento. Ou null caso a criação não tenha sido bem-sucedida
- * @pre Pelo menos um dos arquivos arquivo_mp3 ou arquivo_wav deve existir para se
- * criar o áudio.
+ * parametro com os nomes de arquivo passados como parâmetro, ou null 
+ * caso a criação não tenha sido bem-sucedida
 */
 
 Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw);
 
 
-// documenta destroi_audio
+// documenta remove_arquivos
 /**
  * @brief Remove todos os aruivos relacionados ao objeto áudio com base na opcao 
- * passada como parâmetro e também libera toda a memória que foi alocada pelo objeto.
+ * passada como parâmetro.
  * @param audio ponteiro para um objeto do tipo áudio
  * @param opcao representa a opcao de exclusão dos arquivos
- * @param din diz se o áudio foi criado dinamicamente ou estaticamente
- * @return Um objeto do tipo Audio que representa o arquivo de áudio passado como
- * parametro e já com todos os arquivos no formato necessário para as operações 
- * de processamento. Ou null caso a criação não tenha sido bem-sucedida
+ * @return 0 caso os arquivos requisitados para exclusão tenham sido apagados com 
+ * sucesso, e 1 caso contrário.
  * @note Com o parametro opcao podemos definir as seguintes opções de exclusão de arquivos
  * opcao = 4: arquivo mp3 
  * opcao = 2: arquivo wav 
@@ -130,11 +126,9 @@ Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw);
  * exemplo: opcao = 6: apga o arquivo .mp3 e o arquivo .wav
  * opcao = 7: apaga todos os aruivos
  * opcao = 1: apaga somente o arquivo .raw
- * @note din = 1 se o áudio foi criado dinamicamente
- * din = 0 se o áudio foi criado estaticamente
 */
 
-int destroi_audio(Audio *audio,int opcao, int din);
+int remove_arquivos(Audio *audio,int opcao);
 
 
 // documenta atualizar_audio
@@ -147,5 +141,15 @@ int destroi_audio(Audio *audio,int opcao, int din);
 */
 
 int atualizar_audio(Audio *audio);
+
+
+// documenta destroi_audio
+/**
+ * @brief Libera o espaço alocado por audio
+ * @param audio ponteiro para um objeto do tipo Audio
+ * @return não retorna nada (void)
+*/
+
+void destroi_audio(Audio *audio);
 
 #endif
