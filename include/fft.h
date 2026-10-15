@@ -18,9 +18,9 @@ void fft_magnitude(double complex *spectrum, double *magnitude, int n);
 
 void fft_power(double complex *spectrum, double *power, int n);
 
-size_t fft_peak_frequency(const double *magnitude, int n);
+double fft_peak_frequency(const double *magnitude, int n);
 
-double fft_bin_frequency(int bin, int n);
+double fft_bin_frequency(int bin, int n, double sample_rate);
 
 // Janelas
 void fft_window_hann(double *samples, int n);
