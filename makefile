@@ -3,7 +3,7 @@ CC = gcc
 AR = ar
 
 CFLAGS = -Wall -Wextra -Iinclude -fPIC # flags de warning, onde procurar os arquivos.h e geração de bibliotecas dinâmicas
-PREFIX ?= /tmp/audio_lib 
+CPPFLAGS = -Iinclude
 LDLIBS = -lm
 
 # Bibliotecas
@@ -21,6 +21,7 @@ APP_DIR = app
 # Mapeamento
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS)) # (Padrão ordige, Padrão destino, Lista)
+DEPS = $(OBJS:.o=.d)
 
 # Alvos "falsos"
 .PHONY: all clean run test install
@@ -31,7 +32,7 @@ all: $(STATIC_LIB) $(DYNAMIC_LIB) $(BIN_DIR)/main $(BIN_DIR)/test_run
 # Compilação dos objetos
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@ 
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@ 
 
 # Biblioteca estática
 $(STATIC_LIB): $(OBJS)
@@ -45,11 +46,11 @@ $(DYNAMIC_LIB): $(OBJS)
 
 $(BIN_DIR)/main: $(APP_DIR)/main.c
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) $< $(STATIC_LIB) $(LDLIBS) -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< $(STATIC_LIB) $(LDLIBS) -o $@
 
 $(BIN_DIR)/test_run: $(TEST_DIR)/test_run.c $(OBJS)
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) $^ -o $@ $(LDLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $^ -o $@ $(LDLIBS)
 
 clean:
 	rm -rf $(BIN_DIR) $(LIB_DIR) $(BUILD_DIR)
@@ -60,8 +61,11 @@ run: $(BIN_DIR)/main
 test: $(BIN_DIR)/test_run
 	./$(BIN_DIR)/test_run
 
-install: 
+
+PREFIX ?= /tmp/audio_lib 
+install: $(STATIC_LIB) $(DYNAMIC_LIB)
 	mkdir -p $(PREFIX)/include $(PREFIX)/lib
 	cp include/*.h $(PREFIX)/include/
-	cp $(LIB_DIR)/* $(PREFIX)/lib/
+	cp $(STATIC_LIB) $(DYNAMIC_LIB) $(PREFIX)/lib/
 
+-include $(DEPS)
