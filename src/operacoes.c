@@ -21,6 +21,14 @@ int alterar_intensidade(Audio *audio, float ganho){
     return 0;
 }
 
+// Podemos acelerar um áudio pulando amostras dentro do vetor com base em um certo fator, para isso podemos fazer com que o vetor
+// apenas salve as amostras pares, com um fator igual a 2, tornano o áudio 2x mais rápido.
+
+// Selecionmaos com base no fator os i's que serão usados ou para mesclar amostras ou inserir novas amostras entre as existentes;
+// Podemos desacelerar um áudio adcionando amostras artificiais dentro do vetor, para isso podemos criar amostras artificiis com base
+// em amostras adjascentes e adicionar as artificiais entre elas, será necessário um vetor maior, além do deslocamento das amostras
+// já dentro do vetor original.
+
 int alterar_velocidade(Audio *audio,float fator){
 
     if(fator < 0){
@@ -36,30 +44,20 @@ int alterar_velocidade(Audio *audio,float fator){
     
     for(int i = 0; i < m;i++){
 
-        // selecionmaos de com base no fator os i's que serão usados ou para mesclar amostras ou inserir novas amostras entre as existentes;
-
-        // Podemos acelerar um áudio pulando amostras dentro do vetor com base em um certo fator, para isso podemos fazer com que o vetor
-        // apenas salve as amostras pares, com um fator igual a 2, tornano o áudio 2x mais rápido.
-
-        // Podemos desacelerar um áudio adcionando amostras artificiais dentro do vetor, para isso podemos criar amostras artificiis com base
-        // em amostras adjascentes e adicionar as artificiais entre elas, será necessário um vetor maior, além do deslocamento das amostras
-        // já dentro do vetor original.
-
         float pos = i * fator;
         int i0 = (int)pos;
         int i1;
         if(i0 + 1 < n) i1 = i0 + 1;
         else i1 = i0;
 
-        // parte fracionária de pos, a posição intermediária em que colocamos a amostra artificial no caso da aceleração
+        // Parte fracionária de pos, a posição intermediária em que colocamos a amostra artificial no caso da aceleração
         float frac = pos - i0; 
         
-        // também podemos definir o quanto de cada amostra adjascente (porcentagem) será usado para gerar a artificial.
+        // Também podemos definir o quanto de cada amostra adjascente (porcentagem) será usado para gerar a artificial.
         // No caso desse trabalho estou considerando a pos de colocação da amostra artificial no vetor final
         // com base no fator de velocidade escolhido.
         
         aux[i] = audio->amostras[i0] * (1.0 - frac) + audio->amostras[i1] * frac;
-        // No caso da desaceleração, pegará para i o piso do valor de pos
     }
     
     audio->tamanho = m;
@@ -70,7 +68,6 @@ int alterar_velocidade(Audio *audio,float fator){
     }
 
     // Pode diminuir a intensidade de cada áudio dependendo do ganho utilizado
-
     int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
         float ini_ad2, float duracao){
     
@@ -129,9 +126,8 @@ int alterar_velocidade(Audio *audio,float fator){
     audio_mixado->tamanho = tam_audiofinal;
 
     return 0;
-
     }
-
+    
     int cortar_audio(Audio *audio, float segundo_inicial, float segundo_final){
         
         if(segundo_final > audio->tamanho/16000){
@@ -157,4 +153,20 @@ int alterar_velocidade(Audio *audio,float fator){
         return 0;
     }
 
+    int inverter_audio(Audio *audio){
+
+        int tam_audio = audio->tamanho;
+        float *audio_invertido = malloc(tam_audio*sizeof(float));
+        int j = tam_audio-1;
+        
+        for(int i=0;i < tam_audio;i++){
+            audio_invertido[j] = audio->amostras[i];
+            j--;
+        }
+
+        audio->amostras = audio_invertido;
+        return 1;
+        
+    }
+    
     // Fazer uma função que escolhe em qual segundo do áudio 1 encaixaremos o áudio 2
