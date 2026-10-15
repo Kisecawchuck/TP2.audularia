@@ -117,6 +117,7 @@ Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw);
  * passada como parâmetro e também libera toda a memória que foi alocada pelo objeto.
  * @param audio ponteiro para um objeto do tipo áudio
  * @param opcao representa a opcao de exclusão dos arquivos
+ * @param din diz se o áudio foi criado dinamicamente ou estaticamente
  * @return Um objeto do tipo Audio que representa o arquivo de áudio passado como
  * parametro e já com todos os arquivos no formato necessário para as operações 
  * de processamento. Ou null caso a criação não tenha sido bem-sucedida
@@ -129,10 +130,11 @@ Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw);
  * exemplo: opcao = 6: apga o arquivo .mp3 e o arquivo .wav
  * opcao = 7: apaga todos os aruivos
  * opcao = 1: apaga somente o arquivo .raw
- * 
+ * @note din = 1 se o áudio foi criado dinamicamente
+ * din = 0 se o áudio foi criado estaticamente
 */
 
-int destroi_audio(Audio *audio,int opcao);
+int destroi_audio(Audio *audio,int opcao, int din);
 
 
 // documenta atualizar_audio
