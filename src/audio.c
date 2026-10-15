@@ -28,7 +28,6 @@ int convertermp3_wav(Audio *audio){
     snprintf(cmd, sizeof(cmd), "ffmpeg -i \"%s\" \"%s\"", entrada, saida);
     return system(cmd);
 }
-
 // Converte um arquivo .wav em .raw usando o ffmpeg
 int converterwav_raw(Audio *audio){
     
@@ -88,6 +87,7 @@ int converterraw_floats(Audio *audio){
 
     // Diz a quantidade de bytes dos elementos do arquivo até onde o ponteiro de leitura aponta
     // ftell retorna -1 caso não tenha conseguido ler os bytes corretamente
+
     long bytes = ftell(f); 
     if(bytes < 0){
         printf("Erro ao tentar ler o número de bytes do .raw\n");
@@ -145,16 +145,15 @@ int converterfloat_raw(Audio *audio){
         printf("Nem todos as amostras foram salvas corretamente!\n");
         return 1;
     }
-    
     return 0;
 }
 
 int converteraw_wav(Audio *audio){
+    
     if(audio == NULL || audio->arquivo_raw == NULL){
         printf("Erro, áudio ou arquivo .raw inválidos\n");
         return 1;
     }
-
     char *entrada = audio->arquivo_raw;
     
     if(arquivo_existe(entrada) == 1){

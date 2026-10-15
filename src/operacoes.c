@@ -37,11 +37,11 @@ int alterar_intensidade(Audio *audio, float ganho){
 int alterar_velocidade(Audio *audio,float fator){
 
     if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0){
-            printf("Erro, áudio ou amostras do áudio inválidos \n");
-            return 1;
-        }
+        printf("Erro, áudio ou amostras do áudio inválidos \n");
+        return 1;
+    }
 
-    if(fator < 0){
+    if(fator <= 0){
         printf("Fator de velocidade inválido, ele deve ser maior que 0\n");
         return 1;
     }
@@ -49,14 +49,16 @@ int alterar_velocidade(Audio *audio,float fator){
     int n = audio->tamanho;
     int m = (int)(n/fator);
 
+    if(m < 1){
+        printf("Erro, o fator passado torna o tamanho do áudio final inválido \n");
+        return 1;
+    }
     float *aux = malloc(m * sizeof(float));
     
     if (aux == NULL){
         printf("Erro na alocação \n");
         return 1;
     }
-
-    if (!aux) return 1;
     
     for(int i = 0; i < m;i++){
 
@@ -76,21 +78,17 @@ int alterar_velocidade(Audio *audio,float fator){
         aux[i] = audio->amostras[i0] * (1.0 - frac) + audio->amostras[i1] * frac;
     }
     
+    free(audio->amostras);
     audio->tamanho = m;
     audio->amostras = aux;
     
     return 0;
-
     }
 
     // Pode diminuir a intensidade de cada áudio dependendo do ganho utilizado
     int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
         float ini_ad2, float duracao){
 
-    if (audio_mixado == NULL || audio1 == NULL || audio2 == NULL){
-            printf("Erro, áudios inválidos \n");
-            return 1;
-        }
     
     if (audio1->amostras == NULL || audio2->amostras == NULL){
             printf("Erro, amostras de algum dos áudios inválidas \n");
@@ -111,11 +109,15 @@ int alterar_velocidade(Audio *audio,float fator){
         printf("Duração inválida, ela deve ser maior que 0\n");
         return 1;
     }
-    
+
+    int ini1 = (int)(ini_ad1*16000);
+    int ini2 = (int)(ini_ad2*16000);
+
     int tam_audio1 = audio1->tamanho;
     int tam_audio2 = audio2->tamanho;
-    int fim_ad2 = ini_ad2*16000 + tam_audio2;
-    int fim_ad1 = ini_ad1*16000 + tam_audio1;
+
+    int fim_ad2 = ini2 + tam_audio2;
+    int fim_ad1 = ini1 + tam_audio1;
     int tam_audiofinal = duracao*16000;
     
     if(fim_ad1 > tam_audiofinal || fim_ad2 > tam_audiofinal){
@@ -133,8 +135,7 @@ int alterar_velocidade(Audio *audio,float fator){
     int i=0;
     float parte_ad1;
     float parte_ad2;
-    int ini1 = ini_ad1*16000;
-    int ini2 = ini_ad2*16000;
+    
 
     while(i < tam_audiofinal){
      
