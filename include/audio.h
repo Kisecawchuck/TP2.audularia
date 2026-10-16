@@ -7,7 +7,7 @@ typedef struct {
     char *arquivo_mp3;
     char *arquivo_wav;
     char *arquivo_raw;
-    int tamanho;
+    long tamanho;
     
 } Audio;
 

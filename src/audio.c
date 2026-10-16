@@ -78,7 +78,7 @@ int converterraw_floats(Audio *audio){
             return 1;
         }
 
-    int n;
+    long n;
 
     FILE *f = fopen(caminho, "rb");
 
@@ -116,7 +116,7 @@ int converterraw_floats(Audio *audio){
 
     // Contamos quantos
     // fread salva os conteúdos de um arquivo dentro de um array e retorna a quantidade de elementos salvos. 
-    int lidas = fread(audio->amostras, sizeof(float), n, f);
+    long lidas = fread(audio->amostras, sizeof(float), n, f);
     fclose(f);
 
     if(n != lidas){
@@ -140,7 +140,7 @@ int converterfloat_raw(Audio *audio){
 
     char *caminho = audio->arquivo_raw;
     float *amostras = audio->amostras;
-    int n = audio->tamanho;
+    long n = audio->tamanho;
 
     FILE *f = fopen(caminho,"wb");
     if (!f){
@@ -148,7 +148,7 @@ int converterfloat_raw(Audio *audio){
         return 1;
     }
     
-    int escritos = fwrite(amostras, sizeof(float), n,f);
+    long escritos = fwrite(amostras, sizeof(float), n,f);
 
     if(fclose(f) != 0 || escritos != n){
         printf("converterfloat_raw: erro, nem todos as amostras foram salvas corretamente!\n");
