@@ -1,5 +1,7 @@
-#ifndef VETOR_H
-#define VETOR_H
+#ifndef AUDIO_H
+#define AUDIO_H
+
+#include <stdlib.h>
 
 // define o tipo AUDIO
 typedef struct {
@@ -7,8 +9,7 @@ typedef struct {
     char *arquivo_mp3;
     char *arquivo_wav;
     char *arquivo_raw;
-    long tamanho;
-    
+    size_t tamanho;
 } Audio;
 
 
