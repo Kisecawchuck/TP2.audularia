@@ -1,1 +1,4 @@
 audio/*
+lib/*
+bin/*
+build/*
