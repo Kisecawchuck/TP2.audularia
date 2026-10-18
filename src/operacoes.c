@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/audio.h"
-#include "../include/operacoes.h"
 
-int alterar_intensidade(Audio *audio, float ganho) {
+int alterar_intensidade(Audio *audio, double ganho) {
     if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0) {
         printf("alterar_intensidade: erro, áudio ou amostras do áudio inválidos \n");
         return 1;
@@ -31,7 +30,7 @@ int alterar_intensidade(Audio *audio, float ganho) {
 // em amostras adjascentes e adicionar as artificiais entre elas, será necessário um vetor maior, além do deslocamento das amostras
 // já dentro do vetor original.
 
-int alterar_velocidade(Audio *audio, float fator) {
+int alterar_velocidade(Audio *audio, double fator) {
     if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0) {
         printf("alterar_velocidade: erro, áudio ou amostras do áudio inválidos \n");
         return 1;
@@ -50,7 +49,7 @@ int alterar_velocidade(Audio *audio, float fator) {
         return 1;
     }
 
-    float *aux = malloc(m * sizeof(float));
+    double *aux = malloc(m * sizeof(double));
 
     if (aux == NULL) {
         printf("Erro na alocação \n");
@@ -58,12 +57,12 @@ int alterar_velocidade(Audio *audio, float fator) {
     }
 
     for (size_t i = 0; i < m; i++) {
-        float pos = i * fator;
-        int i0 = (int) pos;
-        int i1 = i0 + 1 * (i0 + 1 < n);
+        double pos = i * fator;
+        size_t i0 = (size_t) pos;
+        size_t i1 = i0 + 1 * (i0 + 1 < n);
 
         // Parte fracionária de pos, a posição intermediária em que colocamos a amostra artificial no caso da aceleração
-        float frac = pos - i0; 
+        double frac = pos - i0; 
 
         // Também podemos definir o quanto de cada amostra adjascente (porcentagem) será usado para gerar a artificial.
         // No caso desse trabalho estou considerando a pos de colocação da amostra artificial no vetor final
@@ -80,8 +79,8 @@ int alterar_velocidade(Audio *audio, float fator) {
 }
 
 // Pode diminuir a intensidade de cada áudio dependendo do ganho utilizado
-int mixar_audio(Audio *audio_mixado, Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
-        float ini_ad2, float duracao) {
+int mixar_audio(Audio *audio_mixado, Audio *audio1, Audio *audio2, double ganho_audio1, double ganho_audio2, double ini_ad1, 
+        double ini_ad2, double duracao) {
 
     if (audio1->tamanho <= 0 || audio2->tamanho <= 0) {
         printf("mixar_audio: erro, tamanhos dos áudios inválidos \n");
@@ -124,15 +123,15 @@ int mixar_audio(Audio *audio_mixado, Audio *audio1, Audio *audio2, float ganho_a
         return 1;
     }
 
-    float *mix = malloc(tam_audiofinal * sizeof(float));
+    double *mix = malloc(tam_audiofinal * sizeof(double));
 
     if (mix == NULL) {
         printf("Erro na alocação \n");
         return 1;
     }
 
-    float parte_ad1;
-    float parte_ad2;
+    double parte_ad1;
+    double parte_ad2;
 
     for (size_t i = 0; i < tam_audiofinal; i++) {
         if (ini1 <= i && i < fim_ad1) {
@@ -152,7 +151,7 @@ int mixar_audio(Audio *audio_mixado, Audio *audio1, Audio *audio2, float ganho_a
     return 0;
 }
 
-int cortar_audio(Audio *audio, float segundo_inicial, float segundo_final) {
+int cortar_audio(Audio *audio, double segundo_inicial, double segundo_final) {
     if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0) {
         printf("cortar_audio: erro, áudio ou amostras do áudio inválidos \n");
         return 1;
@@ -173,22 +172,22 @@ int cortar_audio(Audio *audio, float segundo_inicial, float segundo_final) {
         return 1;
     }
 
-    size_t m = (segundo_final - segundo_inicial)*16000;
+    size_t m = (segundo_final - segundo_inicial) * 16000;
 
     if (m <= 0) {
         printf("cortar_audio: erro, trecho cortado vazio com o segundo_incial e segundo_final passados como parametro\n");
         return 1;
     }
 
-    float *audio_cortado = malloc(m * sizeof(float));
+    double *audio_cortado = malloc(m * sizeof(double));
 
     if (audio_cortado == NULL) {
         printf("Erro na alocação \n");
         return 1;
     }
 
-    size_t ini = (size_t)(segundo_inicial*16000);
-    size_t fim =  (size_t)(segundo_final*16000);
+    size_t ini = (size_t) (segundo_inicial * 16000);
+    size_t fim =  (size_t) (segundo_final * 16000);
 
     for (size_t i = ini; i < fim; i++) {
         audio_cortado[i - ini] = audio->amostras[i];
@@ -207,7 +206,7 @@ int inverter_audio(Audio *audio) {
     }
 
     for (size_t i = 0, j = audio->tamanho - 1; i < j; i++, j--) {
-        float tmp = audio->amostras[i];
+        double tmp = audio->amostras[i];
         audio->amostras[i] = audio->amostras[j];
         audio->amostras[j] = tmp;
     } 
