@@ -10,8 +10,8 @@ int alterar_intensidade(Audio *audio, float ganho){
             return 1;
         }
 
-    if(ganho <=0 ){
-        printf("alterar_intensidade: erro, fator de ganho inválido, ele deve ser maior que 0\n");
+    if(ganho <=0 || ganho > 10 ){
+        printf("alterar_intensidade: erro, fator de ganho inválido, ele deve ser maior que 0 e menor ou iguall a 10\n");
         return 1;
     }
 
@@ -41,8 +41,8 @@ int alterar_velocidade(Audio *audio,float fator){
         return 1;
     }
 
-    if(fator <= 0){
-        printf("alterar_velocidade: fator de velocidade inválido, ele deve ser maior que 0\n");
+    if(fator <= 0 || fator > 10){
+        printf("alterar_velocidade: fator de velocidade inválido, ele deve ser maior que 0 e menor ou igual a 10\n");
         return 1;
     }
 
@@ -100,8 +100,8 @@ int alterar_velocidade(Audio *audio,float fator){
             return 1;
         } 
     
-    if(ganho_audio1 <= 0 || ganho_audio2 <= 0){
-        printf("mixar_audio: erro, ganho de áudio inválido, ele deve ser maior que 0\n");
+    if(ganho_audio1 <= 0 || ganho_audio2 <= 0 || ganho_audio1 > 10 || ganho_audio2 > 10){
+        printf("mixar_audio: erro, ganho de áudio inválido, ele deve ser maior que 0 e menor ou igual a 10\n");
         return 1;
     }
 
@@ -156,7 +156,7 @@ int alterar_velocidade(Audio *audio,float fator){
         mix[i] = parte_ad1 + parte_ad2;
         i++;
     }
-  
+    
     audio_mixado->amostras = mix;
     audio_mixado->tamanho = tam_audiofinal;
 

@@ -87,8 +87,7 @@ int converterraw_floats(Audio *p);
  * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
  * @pre audio->amostras != NULL
  * @pre audio->arquivo_raw != NULL
- * @post audio->amostras agora representa as amostras do áudio dentro de raw
- * em vários floats de um array
+ * @post arquivo .raw agora salva as amostras do áudio dentro de audio->amostras
 */
 int converterfloat_raw(Audio *p);
 
@@ -102,7 +101,7 @@ int converterfloat_raw(Audio *p);
  * @param arquivo_wav caminho do arquivo .wav
  * @param arquivo_raw caminho do arquivo .raw 
  * @return Um objeto do tipo Audio que representa o arquivo de áudio passado como
- * parametro com os nomes de arquivo passados como parâmetro, ou null 
+ * com os nomes de arquivo passados como parâmetro, ou null 
  * caso a criação não tenha sido bem-sucedida
 */
 
@@ -117,6 +116,7 @@ Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw);
  * @param opcao representa a opcao de exclusão dos arquivos
  * @return 0 caso os arquivos requisitados para exclusão tenham sido apagados com 
  * sucesso, e 1 caso contrário.
+ * @pre Os nomes de arquivos passados para exclusão devem ser diferentes de NULL
  * @note Com o parametro opcao podemos definir as seguintes opções de exclusão de arquivos
  * opcao = 4: arquivo mp3 
  * opcao = 2: arquivo wav 
@@ -147,8 +147,9 @@ int atualizar_audio(Audio *audio);
 /**
  * @brief Libera o espaço alocado por audio
  * @param audio ponteiro para um objeto do tipo Audio
- * @return 1 caso a alocação não ponteiros para as amostras ou 
- * para o audio sejam in válidos (== NULL)
+ * @return 1 caso a liberação da memória alocada seja bem-sucedida
+ * e 0 caso contrário 
+ * @pre audio != NULL e audio->amostras != NULL
 */
 
 int destroi_audio(Audio *audio);
