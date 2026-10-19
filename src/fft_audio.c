@@ -9,22 +9,22 @@ static int proxima_pot2(size_t n) {
     return p;
 }
 
-int audio_para_complexo(const Audio *audio, double complex *saida, int *N) {
+int audio_para_complexo(const Audio *audio, double complex **saida, int *N) {
     if (!audio || !audio->amostras || audio->tamanho == 0 || !saida || !N ) {
-        printf("audio_para_complexo: ERRO, argumento inválido.\n");
-        return -1;
+        fprintf(stderr, "audio_para_complexo: ERRO, argumento inválido.\n");
+        return 1;
     }
 
     int n = proxima_pot2(audio->tamanho);
     double complex *buf = calloc(n, sizeof(double complex)); // calloc inicializa todos os espaços em 0;
     if (!buf) {
-        printf("audio_para_complexo: ERRO, falha ao alocar buffer.\n");
-        return -1;
+        fprintf(stderr, "audio_para_complexo: ERRO, falha ao alocar buffer.\n");
+        return 2;
     }
 
     for (size_t i = 0; i < audio->tamanho; i++)
         buf[i] = audio->amostras[i];
-    saida = buf;
+    *saida = buf;
     *N = n;
     return 0;
 }
@@ -40,24 +40,24 @@ int complexo_para_audio(const double complex *entrada, Audio *audio) {
     return 0;
 }
 
-int audio_espectro(const Audio *audio, double *mag, int *N) {
+int audio_espectro(const Audio *audio, double **mag, int *N) {
     double complex *z, *w;
-    if (audio_para_complexo(audio, z, N)) {
-        printf("audio_espectro: ERRO, falha em converter audio para complexo.\n");
+    if (audio_para_complexo(audio, &z, N)) {
+        fprintf(stderr, "audio_espectro: ERRO, falha em converter audio para complexo.\n");
         return 1;
     }
 
     w = malloc(*N * sizeof(double complex));
-    mag = malloc(*N * sizeof(double));
+    *mag = malloc(*N * sizeof(double));
     if (!w || !mag || fft(z, w, *N)) {
         free(z);
         free(w);
         free(mag);
-        printf("audio_espectro: ERRO, falha ao obter espectro.\n");
+        fprintf(stderr, "audio_espectro: ERRO, falha ao obter espectro.\n");
         return 2;
     }
 
-    fft_magnitude(w, mag, *N);
+    fft_magnitude(w, *mag, *N);
     free(z);
     free(w);
 
@@ -67,8 +67,8 @@ int audio_espectro(const Audio *audio, double *mag, int *N) {
 double audio_frequencia_dominante(const Audio *audio) {
     double *mag;
     int N;
-    if (audio_espectro(audio, mag, &N)) {
-        printf("audio_frequencia_dominante: ERRO, falha em audio_espectro.\n");
+    if (audio_espectro(audio, &mag, &N)) {
+        fprintf(stderr, "audio_frequencia_dominante: ERRO, falha em audio_espectro.\n");
         return -1;
     }
     double f = fft_peak_frequency(mag, N, audio->sample_rate);
@@ -79,8 +79,8 @@ double audio_frequencia_dominante(const Audio *audio) {
 int audio_passa_baixo(Audio *audio, double cutoff) {
     double complex *x;
     int N;
-    if (audio_para_complexo(audio, x, &N)) {
-        printf("audio_passa_baixo: ERRO, falha em audio_para_complexo.\n");
+    if (audio_para_complexo(audio, &x, &N)) {
+        fprintf(stderr, "audio_passa_baixo: ERRO, falha em audio_para_complexo.\n");
         return 1;
     }
 
@@ -93,8 +93,8 @@ int audio_passa_baixo(Audio *audio, double cutoff) {
 int audio_passa_alto(Audio *audio, double cutoff) {
     double complex *x;
     int N;
-    if (audio_para_complexo(audio, x, &N)) {
-        printf("audio_passa_alto: ERRO, falha em audio_para_complexo.\n");
+    if (audio_para_complexo(audio, &x, &N)) {
+        fprintf(stderr, "audio_passa_alto: ERRO, falha em audio_para_complexo.\n");
         return 1;
     }
 
