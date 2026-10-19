@@ -1,149 +1,121 @@
-#ifndef VETOR_H
-#define VETOR_H
+#ifndef AUDIO_H
+#define AUDIO_H
+
+#include <stddef.h>
+#include <stdint.h>
 
 // define o tipo AUDIO
 typedef struct {
-    float *amostras;
-    char *arquivo_mp3;
-    char *arquivo_wav;
-    char *arquivo_raw;
-    int tamanho;
-    
+    double *amostras;
+    char *filename;
+    size_t tamanho;
+    double sample_rate;
 } Audio;
+
+/*
+ * @brief Cria um objeto do tipo áudio, converte um audio no formato .mp3 ou .wav
+ * nos formatos que serão utilizados no processamento do áudio: array, raw, wav e mp3
+ * e retorna o objeto criado
+ * @param filename caminho do arquivo
+ * @param sample_rate taxa de amostras
+ * @return Um objeto do tipo Audio que representa o arquivo de áudio passado como
+ * parametro com os nome de arquivo passado como parâmetro, ou null 
+ * caso a criação não tenha sido bem-sucedida
+*/
+Audio *criar_audio(char *filename, double sample_rate);
+
+
+/*
+ * @brief Libera o espaço alocado por audio
+ * @param audio ponteiro para um objeto do tipo Audio
+ * @return 1 caso a alocação não ponteiros para as amostras ou 
+ * para o audio sejam in válidos (== NULL)
+*/
+int destruir_audio(Audio *audio);
 
 
 // Essas funções usam a bilbioteca ffmpeg do bash e só estão aqui 
 // para conversão dos arquivos com que iremos trabalhar, não as implementamos: 
 
-// documenta convertemp3_raw
 /**
- * @brief Converte um arquivo .mp3 em um arquivo .wav
+ * @brief Converte um arquivo de áudio em um arquivo .wav
  * @param *audio Um ponteiro para um áudio
- * @return 0 se a conversão foi bem-sucedida e 1 caso contrário
- * @pre audio->arquivo_wav != NULL
- * @pre audio->arquivo_mp3 existe
- * @pre audio->arquivo_mp3 != NULL 
+ * @param caminho válido para .wav
+ * @return 0 se a conversão foi bem-sucedida, 1 se os argumentos forem inválidos,
+ * 2 se o arquivo não existe,
+ * 3 se a taxa de amostragem for inválida, 
+ * 4 se o comando for mais longo do que esperado,
+ * 5 se houve um erro ao executar FFmpeg,
+ * 6 se FFmpeg retornou algum erro;
+ * @pre out é .wav válido
 */
-int convertermp3_wav(Audio *p);
+int convert_to_wav(Audio *p, const char *out);
 
 
-// documenta convertewav_raw
 /**
- * @brief Converte um arquivo .wav em um arquivo .raw
+ * @brief Converte um arquivo de áudio em um arquivo .mp3
  * @param *audio Um ponteiro para um áudio
- * @return 0 se a conversão foi bem-sucedida e 1 caso contrário
- * @pre audio->arquivo_raw != NULL
- * @pre audio->arquivo_wav existe
- * @pre audio->arquivo_wav != NULL 
+ * @param *out caminho válido para .mp3
+ * @return 0 se a conversão foi bem-sucedida, 1 se os argumentos forem inválidos,
+ * 2 se o arquivo não existe,
+ * 3 se a taxa de amostragem for inválida, 
+ * 4 se o comando for mais longo do que esperado,
+ * 5 se houve um erro ao executar FFmpeg,
+ * 6 se FFmpeg retornou algum erro;
+ * @pre out é .mp3 válido
 */
-int converterwav_raw(Audio *p);
+int convert_to_mp3(Audio *p, const char *out);
 
 
-// documenta converteraw_wav
 /**
- * @brief Converte um arquivo .raw em um arquivo .wav
+ * @brief Converte um arquivo de áudio em um arquivo .mp3
  * @param *audio Um ponteiro para um áudio
- * @return 0 se a conversão foi bem-sucedida e 1 caso contrário
- * @pre audio->arquivo_raw != NULL
- * @pre audio->arquivo_raw existe
- * @pre audio->arquivo_wav != NULL 
+ * @param *out caminho válido para .raw
+ * @return 0 se a conversão foi bem-sucedida, 1 se os argumentos forem inválidos,
+ * 2 se o arquivo não existe,
+ * 3 se a taxa de amostragem for inválida, 
+ * 4 se o comando for mais longo do que esperado,
+ * 5 se houve um erro ao executar FFmpeg,
+ * 6 se FFmpeg retornou algum erro;
+ * @pre out é .raw válido
 */
-int converteraw_wav(Audio *p);
-
-
-// documenta convertewav_mp3
-/**
- * @brief Converte um arquivo .wav em um arquivo .mp3
- * @param *audio Um ponteiro para um áudio
- * @return 0 se a conversão foi bem-sucedida e 1 caso contrário
- * @pre audio->arquivo_mp3 != NULL
- * @pre audio->arquivo_wav existe 
- * @pre audio->arquivo_wav != NULL 
-*/
-
-int converterwav_mp3(Audio *p);
-//
+int convert_to_raw(Audio *p, const char *out);
 
 // Somente implementamos essas:
 
-// documenta converteraw_floats
 /**
- * @brief Salva as amostras de áudio dentro do arquivo em fomrato raw
- * dentro de um array de floats
+ * @brief Salva as amostras do arquivo de áudio dentro de um array de doubles
  * @param *audio Um ponteiro para um áudio
- * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
- * @pre audio->arquivo_raw != NULL
+ * @return 0 se a alteração foi bem-sucedida,
+ * 1 se audio for inválido,
+ * 2 se o comando for mais longo do que esperado,
+ * 3 se houve falha ao abrir o arquivo de áudio,
+ * 4 se houve falha ao alocar amostras,
+ * 5 se houve falha ao alocar buffer temporário,
+ * 6 se houve falha ao ler arquivo de áudio;
  * @post audio->amostras agora representa as amostras do áudio dentro de raw
  * em vários floats de um array
 */
+int carregar_amostras(Audio *audio);
 
-int converterraw_floats(Audio *p);
 
-
-// documenta convertefloat_raw
 /**
- * @brief Salva as amostras dentro do array audio->amostras em um arquivo .raw
- * @param *audio Um ponteiro para um áudio
- * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
- * @pre audio->amostras != NULL
- * @pre audio->arquivo_raw != NULL
- * @post audio->amostras agora representa as amostras do áudio dentro de raw
- * em vários floats de um array
-*/
-int converterfloat_raw(Audio *p);
-
-
-// documenta criar_audio
-/**
- * @brief Cria um objeto do tipo áudio, converte um audio no formato .mp3 ou .wav
- * nos formatos que serão utilizados no processamento do áudio: array, raw, wav e mp3
- * e retorna o objeto criado
- * @param arquivo_mp3 caminho do arquivo .mp3
- * @param arquivo_wav caminho do arquivo .wav
- * @param arquivo_raw caminho do arquivo .raw 
- * @return Um objeto do tipo Audio que representa o arquivo de áudio passado como
- * parametro e já com todos os arquivos no formato necessário para as operações 
- * de processamento. Ou null caso a criação não tenha sido bem-sucedida
- * @pre Pelo menos um dos arquivos arquivo_mp3 ou arquivo_wav deve existir para se
- * criar o áudio.
-*/
-
-Audio *criar_audio(char *arquivo_mp3, char *arquivo_wav, char *arquivo_raw);
-
-
-// documenta destroi_audio
-/**
- * @brief Remove todos os aruivos relacionados ao objeto áudio com base na opcao 
- * passada como parâmetro e também libera toda a memória que foi alocada pelo objeto.
+ * @brief Remove todos os aruivos relacionados ao objeto áudio
+ * passada como parâmetro.
  * @param audio ponteiro para um objeto do tipo áudio
- * @param opcao representa a opcao de exclusão dos arquivos
- * @return Um objeto do tipo Audio que representa o arquivo de áudio passado como
- * parametro e já com todos os arquivos no formato necessário para as operações 
- * de processamento. Ou null caso a criação não tenha sido bem-sucedida
- * @note Com o parametro opcao podemos definir as seguintes opções de exclusão de arquivos
- * opcao = 4: arquivo mp3 
- * opcao = 2: arquivo wav 
- * opcao = 1: arquivo raw
- * Se opcao receber a soma dos valores que representam cada arquivo, cada um desses arquivos 
- * será apagado.
- * exemplo: opcao = 6: apga o arquivo .mp3 e o arquivo .wav
- * opcao = 7: apaga todos os aruivos
- * opcao = 1: apaga somente o arquivo .raw
- * 
+ * @return 0 caso os arquivos requisitados para exclusão tenham sido apagados com 
+ * sucesso, e 1 caso contrário.
 */
+int remover_arquivo_audio(Audio *audio);
 
-int destroi_audio(Audio *audio,int opcao);
 
-
-// documenta atualizar_audio
-/**
+/*
  * @brief Atualiza os arquivos .mp3, .wav e .raw de um objeto do tipo Audio
  * com base no estado atual de seu vetor de amostras.
  * @param audio ponteiro para um objeto do tipo Audio
  * @return 0 se todas as conversões de arquivosforam bem sucedidas e 1 caso contrário
  * @pre audio->amostras != NULL
 */
-
-int atualizar_audio(Audio *audio);
+int atualizar_audio(Audio *audio, char *filename, double sample_rate);
 
 #endif

@@ -17,7 +17,7 @@
  * @note fatores maiores que 1 aceleram o áudio, enquanto fatores
  * menores que 1 e maiores que 0 o desaceleram
 */
-int alterar_velocidade(Audio *audio, float fator);
+int alterar_velocidade(Audio *audio, double fator);
 
 // Documenta inverter_audio
 /**
@@ -40,7 +40,7 @@ int inverter_audio(Audio *audio);
  * @post O vetor de amostras do áudio passado agora representa o 
  * mesmo áudio mas com o volume alterado
 */
-int alterar_intensidade(Audio *audio, float ganho);
+int alterar_intensidade(Audio *audio, double ganho);
 
 // documenta mixar_audio
 /**
@@ -58,8 +58,8 @@ int alterar_intensidade(Audio *audio, float ganho);
  * @post O objeto áudio mixado agora representa um áudio que contém
  * audio1 e audio2
 */
-int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_audio1, float ganho_audio2, float ini_ad1, 
-        float ini_ad2, float duracao);
+int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, double ganho_audio1, double ganho_audio2, double ini_ad1, 
+        double ini_ad2, double duracao);
 
 // documenta cortar_audio
 /**
@@ -74,7 +74,7 @@ int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, float ganho_a
  * apenas um trecho do áudio original com base no intervalo
  * passado como parâmetro.
 */
-int cortar_audio(Audio *audio, float segundo_inicial, float segundo_final);
+int cortar_audio(Audio *audio, double segundo_inicial, double segundo_final);
 
 // documenta alterar_frequencia
 //int alterar_frequencia(Audio *p);
