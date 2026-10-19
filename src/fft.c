@@ -1,68 +1,72 @@
+#include <stdio.h>
+#include <math.h>
 #include "../include/fft.h"
 
-// Função auxiliar para Radix-2 DIT
+// função auxiliar para Radix-2 DIT verificar potência de 2;
 int is_power_of_two(int x) {
     return (x & (x - 1)) == 0;
 }
 
-// Transformada de Fourier
-int fft(double complex *sinal, double complex *saida, int N) {
+// transformada de Fourier Radix-2 DIT;
+int fft_core(double complex *entrada, double complex *saida, int N, int sinal) {
     if (N < 1 || !is_power_of_two(N)) {
-        printf("ERRO: tamanho do sinal inválido\n");
+        printf("ERRO: tamanho do entrada inválido\n");
         return 1;
     }
 
-    if (!sinal) {
-        printf("ERRO: sinal inválido\n");
+    if (!entrada || !saida) {
+        printf("ERRO: argumentos inválidas\n");
         return 2;
     }
 
-    if (!saida) {
-        printf("ERRO: saida inválida\n");
-        return 2;
-    }
+    if (entrada != saida)
+        for (int i = 0; i < N; i++) saida[i] = entrada[i];
 
-    for (int k = 0; k < N; k++) {
-        double complex sum = 0.0;
-        for (int n = 0; n < N; n++) {
-            double angle = -2.0 * PI * k * n / N;
-            sum += sinal[n] * cexp(I * angle);
+    // permutação bit-reversal;
+    for (int i = 1, j = 0; i < N; i++) {
+        int bit = N >> 1;
+        for (; j & bit; bit >>= 1) j ^= bit;
+        j ^= bit;
+        if (i < j) {
+            double complex t = saida[i];
+            saida[i] = saida[j];
+            saida[j] = t;
         }
-        saida[k] = sum;
+    }
+
+    // borboletas;
+    for (int len = 2; len <= N; len <<= 1) {
+        double ang = sinal * 2.0 * PI / len;
+        for (int i = 0; i < N; i += len) {
+            for (int j = 0; j < len / 2; j++) {
+                double complex z = cexp(I * ang * j);
+                double complex w = saida[i + j];
+                double complex v = saida[i + j + len / 2] * z;
+                saida[i + j] = w + v;
+                saida[i + j + len / 2] = w - v;
+            }
+
+        }
     }
 
     return 0;
 }
 
-int ifft(double complex *sinal, double complex *saida, int N) {
-    if (N < 1) {
-        printf("ERRO: tamanho do sinal inválido\n");
-        return 1;
-    }
+int fft(double complex *entrada, double complex *saida, int N) {
+    return fft_core(entrada, saida, N, -1);
+}
 
-    if (!sinal) {
-        printf("ERRO: sinal inválida\n");
-        return 2;
-    }
-
-    if (!saida) {
-        printf("ERRO: saida inválida\n");
-        return 2;
-    }
-
-    for (int n = 0; n < N; n++) {
-        double complex sum = 0.0;
-        for (int k = 0; k < N; k++) {
-            double angle = 2.0 * PI * k * n / N;
-            sum += sinal[k] * cexp(I * angle);
-        }
-        saida[n] = sum / N;
-    }
-
+int ifft(double complex *entrada, double complex *saida, int N) {
+    int r = fft_core(entrada, saida, N, 1);
+    if (r) 
+        return r;
+    // normalizamos as entradas por N;
+    for (int i = 0; i < N; i++)
+        saida[i] /= N;
     return 0;
 }
 
-// Análise espectral
+// análise espectral;
 void fft_magnitude(double complex *spectrum, double *magnitude, int n) {
     for (int k = 0; k < n; k++) {
         magnitude[k] = cabs(spectrum[k]);
@@ -77,11 +81,11 @@ void fft_power(double complex *spectrum, double *power, int n) {
     }
 }
 
-double fft_peak_frequency(const double *magnitude, int n) {
-    double x = -1;
-    for (int k = 0; k < n; k++)
-        if (magnitude[k] > x) x = magnitude[k];
-    return x;
+double fft_peak_frequency(const double *magnitude, int n, double sample_rate) {
+    int melhor = 1;
+    for (int k = 2; k < n / 2; k++)
+        if (magnitude[k] > magnitude[melhor]) melhor = k;
+    return fft_bin_frequency(melhor, n, sample_rate);
 }
 
 double fft_bin_frequency(int bin, int n, double sample_rate) {
@@ -94,7 +98,7 @@ double fft_bin_frequency(int bin, int n, double sample_rate) {
     return ((double) bin - n) * sample_rate / n;
 }
 
-// Janelas
+// janelamento;
 void fft_window_hann(double *samples, int n) {
     if (!samples || n < 2)
         return;
@@ -114,9 +118,9 @@ void fft_window_hamming(double *samples, int n) {
     }
 }
 
-// Filtros
+// filtros;
 int fft_low_pass(double complex *spectrum, int n, double sample_rate, double cutoff) {
-    if (!spectrum || n < 1 || sample_rate < 0.0 || cutoff < 0.0 || cutoff > sample_rate / 2.0)
+    if (!spectrum || n < 1 || sample_rate <= 0.0 || cutoff < 0.0 || cutoff > sample_rate / 2.0)
         return 1;
 
     for (int k = 0; k < n; k++) {
@@ -132,7 +136,7 @@ int fft_low_pass(double complex *spectrum, int n, double sample_rate, double cut
 }
 
 int fft_high_pass(double complex *spectrum, int n, double sample_rate, double cutoff) {
-    if (!spectrum || n < 1 || sample_rate < 0.0 || cutoff < 0.0 || cutoff > sample_rate / 2.0)
+    if (!spectrum || n < 1 || sample_rate <= 0.0 || cutoff < 0.0 || cutoff > sample_rate / 2.0)
         return 1;
 
     for (int k = 0; k < n; k++) {
