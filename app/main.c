@@ -1,8 +1,9 @@
-#include "../include/audio.h"
+#include "audio.h"
+#include "fft_audio.h"
 
 int main() {
     Audio *ring = criar_audio("./audio/Pururin ringtone (Welcome to the NHK) [nRpSRP0l4bo].mp3", 44100);
-    convert_to_wav(ring, "./audio/ring.wav");
+    audio_passa_baixo(ring, 1000.0);
 
     return 0;
 }
