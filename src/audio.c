@@ -229,9 +229,10 @@ int carregar_amostras(Audio *audio) {
         n += lidos;
     }
 
+    int erro_leitura = ferror(pipein);
     int status = pclose(pipein);
 
-    if (ferror(pipein) || status == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+    if (erro_leitura || status == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
         free(amostras);
         printf("carregar_amostras: ERRO, falha ao ler o áudio.\n");
         return 5;
