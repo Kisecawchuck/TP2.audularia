@@ -8,11 +8,11 @@
  * converte amostras (double) para complexos (complex double), preenche
  * com zeros até a próxima potência de 2;
  * aloca *saida (responsabilidade do usuário liberar);
- * retorna o tamanho de saida em sucesso, um número negativo caos contrário;
+ * retorna 0 em caso de sucesso sucesso, numero positivo caso contrário;
 */
 int audio_para_complexo(const Audio *audio, double complex *saida, int *N);
 
-// converte de volta, cortando até audio->tamanho original;
+// converte de volta, cortando até audio->tamanho;
 int complexo_para_audio(const double complex *entrada, Audio *audio);
 
 // calcula o espectro de magnitude (aloga mag);
