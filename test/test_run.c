@@ -3,7 +3,9 @@
 #include <math.h>
 #include <complex.h>
 #include "fft.h"
+
 #define EPSILON 1e-9
+#define PI 3.14159265358979323846
 
 #define NEAR(a, b) (fabs((a) - (b)) < EPSILON)
 
