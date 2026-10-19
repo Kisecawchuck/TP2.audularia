@@ -4,10 +4,8 @@
 #include "audio.h"
 
 // documenta imprimir_samples
-void imprimir_samples();
+int imprimir_amostras(Audio *audio);
 // documenta salvar_arquivo_wav
-void salvar_arquivo_wav();
-// documenta salvar_arquivo_mp3
-void salvar_arquivo_mp3();
+int salvar_amostras(Audio *audio, char *out);
 
 #endif
