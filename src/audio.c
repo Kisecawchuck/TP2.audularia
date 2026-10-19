@@ -244,32 +244,6 @@ int carregar_amostras(Audio *audio) {
     return 0;
 }
 
-// Salva os floats de um vetor representando um áudio em um arquivo .raw  
-int converterfloat_raw(Audio *audio) {
-    if (!audio || !audio->amostras) {
-        printf("converterfloat_raw: ERRO, áudio ou amostras do áudio inválidos\n");
-        return 1;
-    }
-
-    char *caminho = audio->filename;
-    long n = audio->tamanho;
-
-    FILE *f = fopen(caminho, "wb");
-    if (!f) {
-        printf("converterfloat_raw: ERRO, na escrita do arquivo!\n");
-        return 1;
-    }
-
-    long escritos = fwrite(audio->amostras, sizeof(float), n, f);
-
-    if (fclose(f) != 0 || escritos != n) {
-        printf("converterfloat_raw: ERRO, nem todos as amostras foram salvas corretamente!\n");
-        return 1;
-    }
-
-    return 0;
-}
-
 int remover_arquivo_audio(Audio *audio) {
     if (!audio || !audio->filename)
         return 1;
