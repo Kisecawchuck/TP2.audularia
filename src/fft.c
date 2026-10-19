@@ -2,6 +2,8 @@
 #include <math.h>
 #include "../include/fft.h"
 
+#define PI 3.14159265358979323846
+
 // função auxiliar para Radix-2 DIT verificar potência de 2;
 int is_power_of_two(int x) {
     return (x & (x - 1)) == 0;
@@ -10,12 +12,12 @@ int is_power_of_two(int x) {
 // transformada de Fourier Radix-2 DIT;
 int fft_core(double complex *entrada, double complex *saida, int N, int sinal) {
     if (N < 1 || !is_power_of_two(N)) {
-        printf("ERRO: tamanho do entrada inválido\n");
+        fprintf(stderr, "fft_core: ERRO, tamanho do entrada inválido\n");
         return 1;
     }
 
     if (!entrada || !saida) {
-        printf("ERRO: argumentos inválidas\n");
+        fprintf(stderr, "fft_core: ERRO, argumentos inválidos\n");
         return 2;
     }
 
@@ -58,7 +60,7 @@ int fft(double complex *entrada, double complex *saida, int N) {
 
 int ifft(double complex *entrada, double complex *saida, int N) {
     int r = fft_core(entrada, saida, N, 1);
-    if (r) 
+    if (r)
         return r;
     // normalizamos as entradas por N;
     for (int i = 0; i < N; i++)
@@ -89,8 +91,10 @@ double fft_peak_frequency(const double *magnitude, int n, double sample_rate) {
 }
 
 double fft_bin_frequency(int bin, int n, double sample_rate) {
-    if (n == 0 || bin >= n || sample_rate <= 0.0)
+    if (n == 0 || bin >= n || sample_rate <= 0.0) {
+        fprintf(stderr, "fft_bin_frequency: ERRO, argumentos inválidos.\n");
         return -1;
+    }
 
     if (bin <= n / 2)
         return (double) bin * sample_rate / n;
@@ -120,8 +124,10 @@ void fft_window_hamming(double *samples, int n) {
 
 // filtros;
 int fft_low_pass(double complex *spectrum, int n, double sample_rate, double cutoff) {
-    if (!spectrum || n < 1 || sample_rate <= 0.0 || cutoff < 0.0 || cutoff > sample_rate / 2.0)
+    if (!spectrum || n < 1 || sample_rate <= 0.0 || cutoff < 0.0 || cutoff > sample_rate / 2.0) {
+        fprintf(stderr, "fft_low_pass: ERRO, argumentos inválidos.\n");
         return 1;
+    }
 
     for (int k = 0; k < n; k++) {
         double freq = (k <= n / 2) 
@@ -136,8 +142,10 @@ int fft_low_pass(double complex *spectrum, int n, double sample_rate, double cut
 }
 
 int fft_high_pass(double complex *spectrum, int n, double sample_rate, double cutoff) {
-    if (!spectrum || n < 1 || sample_rate <= 0.0 || cutoff < 0.0 || cutoff > sample_rate / 2.0)
+    if (!spectrum || n < 1 || sample_rate <= 0.0 || cutoff < 0.0 || cutoff > sample_rate / 2.0) {
+        fprintf(stderr, "fft_high_pass: ERRO, argumentos inválidos.\n");
         return 1;
+    }
 
     for (int k = 0; k < n; k++) {
         double freq = (k <= n / 2)
