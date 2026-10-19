@@ -28,9 +28,9 @@ static void test_fft_ifft(void) {
 
     /* ida e volta (também in-place) */
     assert(ifft(X, y, N) == 0);
-    for (int n = 0; n < N; n++) assert(cabs(y[n] - x[n]) < 1e-9);
+    for (int n = 0; n < N; n++) assert(cabs(y[n] - x[n]) < EPSILON);
     assert(fft(y, y, N) == 0 && ifft(y, y, N) == 0);
-    for (int n = 0; n < N; n++) assert(cabs(y[n] - x[n]) < 1e-9);
+    for (int n = 0; n < N; n++) assert(cabs(y[n] - x[n]) < EPSILON);
 }
 
 static void test_fft_analise(void) {
@@ -89,12 +89,12 @@ static void test_fft_filtros(void) {
     /* passa-baixa em 1 kHz: sobra só a de 500 Hz */
     for (int k = 0; k < N; k++) Y[k] = X[k];
     assert(fft_low_pass(Y, N, sr, 1000.0) == 0);
-    assert(cabs(Y[BAIXO]) > N / 2.0 - 1e-6 && cabs(Y[ALTO]) < 1e-9);
+    assert(cabs(Y[BAIXO]) > N / 2.0 - 1e-6 && cabs(Y[ALTO]) < EPSILON);
 
     /* passa-alta em 1 kHz: sobra só a de 3000 Hz */
     for (int k = 0; k < N; k++) Y[k] = X[k];
     assert(fft_high_pass(Y, N, sr, 1000.0) == 0);
-    assert(cabs(Y[BAIXO]) < 1e-9 && cabs(Y[ALTO]) > N / 2.0 - 1e-6);
+    assert(cabs(Y[BAIXO]) < EPSILON && cabs(Y[ALTO]) > N / 2.0 - 1e-6);
 
     /* argumentos inválidos */
     assert(fft_low_pass(NULL, N, sr, 1000.0) != 0);
@@ -110,7 +110,6 @@ static void test_fft(void) {
     test_fft_filtros();
     puts("fft: OK");
 }
-
 
 int main() {
     test_fft();
