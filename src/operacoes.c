@@ -107,8 +107,8 @@ int mixar_audio(Audio *audio_mixado, Audio *audio1, Audio *audio2, double ganho_
         return 1;
     }
 
-    size_t ini1 = (size_t)(ini_ad1*16000);
-    size_t ini2 = (size_t)(ini_ad2*16000);
+    size_t ini1 = (size_t) (ini_ad1 * audio1->sample_rate);
+    size_t ini2 = (size_t) (ini_ad2 * audio2->sample_rate);
 
     size_t tam_audio1 = audio1->tamanho;
     size_t tam_audio2 = audio2->tamanho;
@@ -116,7 +116,7 @@ int mixar_audio(Audio *audio_mixado, Audio *audio1, Audio *audio2, double ganho_
     size_t fim_ad2 = ini2 + tam_audio2;
     size_t fim_ad1 = ini1 + tam_audio1;
 
-    size_t tam_audiofinal = (size_t)(duracao*16000);
+    size_t tam_audiofinal = (size_t) (duracao * audio_mixado->sample_rate);
 
     if (fim_ad1 > tam_audiofinal || fim_ad2 > tam_audiofinal) {
         printf("mixar_audio:erro, essa mixagem excederá o tamanho do áudio final!\n");
@@ -167,12 +167,12 @@ int cortar_audio(Audio *audio, double segundo_inicial, double segundo_final) {
         return 1;
     }
 
-    if (segundo_final*16000 > audio->tamanho) {
+    if (segundo_final*audio->sample_rate > audio->tamanho) {
         printf("cortar_audio: erro segundo final excede a duração do áudio \n");
         return 1;
     }
 
-    size_t m = (segundo_final - segundo_inicial) * 16000;
+    size_t m = (segundo_final - segundo_inicial) * audio->sample_rate;
 
     if (m <= 0) {
         printf("cortar_audio: erro, trecho cortado vazio com o segundo_incial e segundo_final passados como parametro\n");
@@ -186,8 +186,8 @@ int cortar_audio(Audio *audio, double segundo_inicial, double segundo_final) {
         return 1;
     }
 
-    size_t ini = (size_t) (segundo_inicial * 16000);
-    size_t fim =  (size_t) (segundo_final * 16000);
+    size_t ini = (size_t) (segundo_inicial * audio->sample_rate);
+    size_t fim =  (size_t) (segundo_final * audio->sample_rate);
 
     for (size_t i = ini; i < fim; i++) {
         audio_cortado[i - ini] = audio->amostras[i];
