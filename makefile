@@ -61,8 +61,7 @@ run: $(BIN_DIR)/main
 test: $(BIN_DIR)/test_run
 	./$(BIN_DIR)/test_run
 
-
-PREFIX ?= /tmp/audio_lib 
+PREFIX ?= /tmp
 install: $(STATIC_LIB) $(DYNAMIC_LIB)
 	mkdir -p $(PREFIX)/include $(PREFIX)/lib
 	cp include/*.h $(PREFIX)/include/
