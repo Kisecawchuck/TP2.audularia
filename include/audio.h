@@ -65,19 +65,16 @@ int convert_to_wav(Audio *p, const char *out);
  * @post audio->amostras agora representa as amostras do áudio dentro de raw
  * em vários floats de um array
 */
-int convert_to_floats(Audio *p);
+int carregar_amostras(Audio *p);
 
 
 /**
  * @brief Salva as amostras dentro do array audio->amostras em um arquivo .raw
  * @param *audio Um ponteiro para um áudio
  * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
- * @pre audio->amostras != NULL
- * @pre audio->arquivo_raw != NULL
- * @post audio->amostras agora representa as amostras do áudio dentro de raw
- * em vários floats de um array
+ * @pre audio->filename existe 
 */
-int converterfloat_raw(Audio *p);
+int convert_to_raw(Audio *p, const char *out);
 
 
 /**

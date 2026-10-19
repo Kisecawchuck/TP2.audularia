@@ -31,6 +31,8 @@ Audio *criar_audio(char *filename, double sample_rate) {
 
     audio->filename = filename;
     audio->sample_rate = sample_rate;
+    audio->amostras = NULL;
+    audio->tamanho = 0;
 
     return audio;
 }
@@ -66,7 +68,7 @@ int convert_to_wav(Audio *audio, const char *out) {
 
     char cmd[1024];
     int erro = snprintf(cmd, sizeof(cmd),
-            "ffmpeg -y -i '%s' -vn -ar '%.0f' -ac 1 -f wav '%s'", audio->filename, audio->sample_rate, out
+            "ffmpeg -y -i '%s' -vn -ar '%.0f' -f wav '%s'", audio->filename, audio->sample_rate, out
     );
 
     if (erro < 0 || (size_t) erro > sizeof(cmd)) {
@@ -105,7 +107,7 @@ int convert_to_mp3(Audio *audio, const char *out) {
 
     char cmd[1024];
     int erro = snprintf(cmd, sizeof(cmd),
-            "ffmpeg -y -i '%s' -vn -ar '%.0f' -ac 1 -f mp3 '%s'", audio->filename, audio->sample_rate, out
+            "ffmpeg -y -i '%s' -vn -ar '%.0f' -f mp3 '%s'", audio->filename, audio->sample_rate, out
     );
 
     if (erro < 0 || (size_t) erro > sizeof(cmd)) {
@@ -144,7 +146,7 @@ int convert_to_raw(Audio *audio, const char *out) {
 
     char cmd[1024];
     int erro = snprintf(cmd, sizeof(cmd),
-            "ffmpeg -y -i '%s' -vn -ar '%.0f' -ac 1 -f s16le '%s'", audio->filename, audio->sample_rate, out
+            "ffmpeg -y -i '%s' -vn -ar '%.0f' -f s16le -acodec pcm_s16le '%s'", audio->filename, audio->sample_rate, out
             );
 
     if (erro < 0 || (size_t) erro > sizeof(cmd)) {
@@ -169,57 +171,77 @@ int convert_to_raw(Audio *audio, const char *out) {
 // Para isso, calculamos o número de bytes do binário resultante do arquivo .raw
 // e alocamos um vetor de floats na memória com base nesse número de bytes
 
-int convert_to_floats(Audio *audio) {
+int carregar_amostras(Audio *audio) {
     if (!audio || !audio->filename) {
-        printf("converterraw_floats: ERRO, áudio ou arquivo .raw inválidos\n");
+        printf("carregar_amostras: ERRO, áudio ou arquivo %s inválidos\n", audio->filename);
         return 1;
     }
 
-    FILE *f = fopen(audio->filename, "rb");
-    if (!f) {
-        printf("converterraw_floats: ERRO, ao tentar abrir o arquivo!\n");
+    char cmd[1024];
+    int erro = snprintf(cmd, sizeof(cmd),
+            "ffmpeg -v error -i '%s' -f s16le -ac 1 -",
+            audio->filename);
+
+    if (erro < 0 || (size_t) erro >= sizeof(cmd)) {
+        printf("carregar_amostras: ERRO, comando muito longo\n");
         return 2;
     }
 
-    // Faz o ponteiro que percorre o arquivo em sua leitura apontar para o final do arquivo (último byte)
-    if (fseek(f, 0, SEEK_END) != 0) {
-        printf("converterraw_floats: ERRO ao tentar percorrer o arquivo\n");
-        fclose(f);
+    FILE *pipein = popen(cmd, "r");
+    if (!pipein) {
+        printf("carregar_amostras: ERRO, falha ao abrir arquivo\n");
         return 3;
     }
 
-    // Diz a quantidade de bytes dos elementos do arquivo até onde o ponteiro de leitura aponta
-    // ftell retorna -1 caso não tenha conseguido ler os bytes corretamente
-    size_t bytes = ftell(f); 
-    if (bytes < 0) {
-        printf("converterraw_floats: ERRO ao tentar ler o número de bytes do .raw\n");
-        fclose(f);
+    size_t capacidade = 4096;
+    size_t n = 0;
+    int16_t buffer[4096];
+
+    double *amostras = malloc(capacidade * sizeof(*amostras));
+    if (!amostras) {
+        printf("carregar_amostras: ERRO, falha ao alocar amostras.\n");
+        pclose(pipein);
         return 4;
     }
 
-    rewind(f);
+    size_t lidos;
+    while ((lidos = fread(buffer, sizeof(char), 4096, pipein)) > 0) {
+        if (n + lidos > capacidade) {
+            size_t nova_capacidade = capacidade;
+            while (nova_capacidade < n + lidos)
+                nova_capacidade *= 2;
+            double *tmp = realloc(amostras, nova_capacidade * sizeof(double));
 
-    audio->amostras = malloc(bytes);
+            if (!tmp) {
+                free(amostras);
+                pclose(pipein);
+                printf("carregar_amostras: ERRO, falha ao buffer temporário.\n");
+                return 4;
+            }
 
-    if (!audio->amostras) {
-        printf("converterraw_floats: ERRO na alocação do vetor de audio!\n");
+            amostras = tmp;
+            capacidade = nova_capacidade;
+        }
+
+        for (size_t i = 0; i < lidos; i++)
+            amostras[n + i] = buffer[i] / 32768.0;
+
+        n += lidos;
+    }
+
+    int status = pclose(pipein);
+
+    if (ferror(pipein) || status == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+        free(amostras);
+        printf("carregar_amostras: ERRO, falha ao ler o áudio.\n");
         return 5;
     }
 
-    // Contamos quantos
-    // fread salva os conteúdos de um arquivo dentro de um array e retorna a quantidade de elementos salvos. 
-    size_t n = bytes/sizeof(float);
-    size_t lidas = fread(audio->amostras, sizeof(float), n, f);
-    fclose(f);
-
-    if (n != lidas) {
-        printf("converterraw_floats: leitura incompleta do .raw\n");
-        free(audio->amostras);
-        return 1;
-    }
+    free(audio->amostras);
+    audio->amostras = amostras;
     audio->tamanho = n;
 
-    return 0;    
+    return 0;
 }
 
 // Salva os floats de um vetor representando um áudio em um arquivo .raw  
@@ -249,14 +271,16 @@ int converterfloat_raw(Audio *audio) {
 }
 
 int remover_arquivo_audio(Audio *audio) {
-    if (remove(audio->filename)) {
-        printf("remove_audio: Arquivo %s removido com sucesso.\n", audio->filename);
-    } else {
-        printf("remove_audio: ERRO, não foi possível remover %s\n", audio->filename);
+    if (!audio || !audio->filename)
         return 1;
+
+    if (remove(audio->filename) == 0) {
+        printf("remove_audio: Arquivo %s removido com sucesso.\n", audio->filename);
+        return 0;
     }
 
-    return 0;
+    printf("remove_audio: ERRO, não foi possível remover %s\n", audio->filename);
+    return 1;
 }
 
 // gera arquivos temporários e os renomeia
@@ -273,6 +297,8 @@ int atualizar_audio(Audio *audio, char *filename, double sample_rate) {
     }
     audio->filename = filename;
     audio->sample_rate = sample_rate;
+    audio->amostras = NULL;
+    audio->tamanho = 0;
 
     return 0;
 }
