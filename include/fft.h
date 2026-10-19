@@ -2,9 +2,6 @@
 #define FFT_H
 
 #include <complex.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <math.h>
 
 #define PI 3.14159265358979323846
 
@@ -18,7 +15,7 @@ void fft_magnitude(double complex *spectrum, double *magnitude, int n);
 
 void fft_power(double complex *spectrum, double *power, int n);
 
-double fft_peak_frequency(const double *magnitude, int n);
+double fft_peak_frequency(const double *magnitude, int n, double sample_rate);
 
 double fft_bin_frequency(int bin, int n, double sample_rate);
 
