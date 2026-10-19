@@ -215,8 +215,8 @@ int carregar_amostras(Audio *audio) {
             if (!tmp) {
                 free(amostras);
                 pclose(pipein);
-                printf("carregar_amostras: ERRO, falha ao buffer temporário.\n");
-                return 4;
+                printf("carregar_amostras: ERRO, falha ao alocar buffer temporário.\n");
+                return 5;
             }
 
             amostras = tmp;
@@ -235,7 +235,7 @@ int carregar_amostras(Audio *audio) {
     if (erro_leitura || status == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
         free(amostras);
         printf("carregar_amostras: ERRO, falha ao ler o áudio.\n");
-        return 5;
+        return 6;
     }
 
     free(audio->amostras);
