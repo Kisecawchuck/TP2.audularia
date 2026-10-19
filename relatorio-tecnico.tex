@@ -22,7 +22,7 @@
 }
 
 \title{\textbf{Relatório Técnico: Sistema de Processamento de Áudio (\texttt{audularia})}}
-\author{TODO\\TODO\\TODO\\TODO}}
+\author{Ezequiel Gomes de Carvalho\\Lucas Pires da Silva\\TODO\\TODO}}
 \date{\today}
 
 \begin{document}
@@ -56,7 +56,16 @@ Os módulos estão divididos da seguinte forma:
 \end{enumerate}
 
 \section{Descrição da API Pública}
-TODO
+A API pública fornece as seguintes ferrametnas:
+\begin{itemize}
+    \item \texttt{criar\_audio(char *filename, double sample\_rate)}: Aloca e carrega o áudio na memória.
+    \item \texttt{destruir\_audio(Audio *audio)}: Libera a memória alocada para as amostras e estrutura.
+    \item \texttt{alterar\_intensidade(Audio *audio, double ganho)}: Aplica ganho multiplicativo às amostras.
+    \item \texttt{alterar\_velocidade(Audio *audio, double fator)}: Modifica a taxa de reprodução por interpolação.
+    \item \texttt{cortar\_audio(Audio *audio, double ini, double fim)}: Extrai um intervalo do áudio.
+    \item \texttt{mixar\_audio(...)}: Combina dois sinais de áudio com ganhos e tempos de início configuráveis.
+    \item \texttt{audio\_passa\_baixo(Audio *audio, double cutoff)}: Filtra frequências acima de um limite especificado.
+\end{itemize}
 
 
 \section{Descrição da Aplicação Cliente}
@@ -71,7 +80,11 @@ O projeto utiliza um arquivo \texttt{Makefile} automatizado para compilação. A
 As regras automatizam a criação das pastas \texttt{build/}, \texttt{bin/} e \texttt{lib/} antes de compilar os arquivos objeto.
 
 \section{Estratégia de Compilação Incremental}
-TODO
+A compilação incremental evita recompilar todo o projeto sempre que uma pequena alteração é feita. Ela funciona mapeando as dependências através do comando do \texttt{Makefile}:
+\begin{lstlisting}[language=make]
+-include $(DEPS)
+\end{lstlisting}
+Onde \texttt{DEPS} contém os arquivos de dependência (\texttt{.d}). O \texttt{make} compara o horário de modificação dos arquivos \texttt{.c} e \texttt{.h} em relação aos objetos \texttt{.o}. Se nada foi alterado no arquivo fonte, a compilação daquele módulo é ignorada.
 
 \section{Geração e Utilização da Biblioteca Estática}
 A biblioteca estática é gerada no diretório \texttt{lib/libaudio.a} usando o utilitário \texttt{ar}:
@@ -106,27 +119,69 @@ Para rodar a aplicação vinculada dinamicamente, o executável apenas referenci
 \end{itemize}
 
 \section{Estratégia e Resultados dos Testes}
-Os testes foram organizados em \texttt{test/test\_run.c}. A estratégia adotada baseou-se em testes unitários para validar individualmente:
+Os testes da biblioteca foram implementados de forma automatizada no módulo \texttt{test/test\_run.c}. A suíte de testes divide-se em quatro eixos principais:
+
 \begin{enumerate}
-    \item Criação e destruição de estruturas de áudio sem vazamento de memória (\emph{memory leaks}).
-    \item Validação matemática de filtros e da transformada de Fourier.
-    \item Verificação de condições de erro em entradas inválidas (ex: frequências negativas ou ponteiros nulos).
+    \item \textbf{Validação da FFT e IFFT (\texttt{test\_fft\_ifft}):}
+    \begin{itemize}
+        \item Verificação de tratamento de entradas inválidas, como tamanho $N = 0$, $N$ não sendo potência de 2 (ex: $N = 6$) ou ponteiros nulos (\texttt{NULL}).
+        \item Teste com sinal senoidal puro de $K$ ciclos, garantindo que a energia no domínio da frequência se concentre exclusivamente nos \emph{bins} $K$ e $N-K$.
+        \item Teste de ida e volta (reconstrução do sinal com a IFFT, inclusive \emph{in-place}), garantindo tolerância de erro abaixo de $\epsilon = 10^{-9}$.
+    \end{itemize}
+
+    \item \textbf{Análise Espectral (\texttt{test\_fft\_analise}):}
+    \begin{itemize}
+        \item Cálculo de magnitude (\texttt{fft\_magnitude}) e potência (\texttt{fft\_power}) com vetores complexos de teste (ex: $3 + 4i$).
+        \item Mapeamento correto de frequências por \emph{bin} (\texttt{fft\_bin_frequency}), testando Nyquist, frequências negativas para $k > N/2$ e limites fora do intervalo.
+        \item Identificação da frequência de pico (\texttt{fft\_peak\_frequency}) em uma senoide sobreposta a um sinal contínuo (DC).
+    \end{itemize}
+
+    \item \textbf{Janelamento (\texttt{test\_fft\_janelas}):}
+    \begin{itemize}
+        \item Teste das janelas de \emph{Hann} (\texttt{fft\_window\_hann}) e \emph{Hamming} (\texttt{fft\_window\_hamming}), validando atenuação nas bordas e preservação no centro.
+        \item Proteção de tamanho insuficiente ($N < 2$), garantindo que o sinal original permaneça inalterado.
+    \end{itemize}
+
+    \item \textbf{Filtros Digitais (\texttt{test\_fft\_filtros}):}
+    \begin{itemize}
+        \item Aplicação de filtro passa-baixo (\texttt{fft\_low\_pass}) e passa-alto (\texttt{fft\_high\_pass}) em um sinal composto por frequências de 500~Hz e 3000~Hz.
+        \item Verificação de eliminação das frequências fora da faixa de corte e preservação das frequências desejadas.
+        \item Rejeição de parâmetros inválidos (ex: frequência de corte acima da frequência de Nyquist ou \emph{sample rate} nulo/negativo).
+    \end{itemize}
 \end{enumerate}
+
+Todos os testes executaram com sucesso, exibindo a mensagem \texttt{"fft: OK"} ao término da bateria.
 
 \section{Exemplo de Teste que Inicialmente Falhou e Posterior Correção}
 TODO
 
 \section{Estratégia de Versionamento Utilizando Git}
-TODO
+O controle de versão do projeto foi estruturado utilizando o \texttt{Git} e hospedado no GitHub no repositório \texttt{TP2.audularia}. A estratégia adotada baseou-se em desenvolvimento modular por funcionalidades (\emph{feature branches}), garantindo isolamento entre o código estável e as novas implementações.
+
+\begin{itemize}
+    \item \textbf{Arquivo \texttt{.gitignore}:} Configurado para ignorar arquivos temporários e binários gerados durante o processo de compilação, como objetos (\texttt{.o}), bibliotecas (\texttt{.a}, \texttt{.so}), o diretório do \texttt{build/}, binários de testes e executáveis.
+    \item \textbf{Fluxo de Trabalho em Branches:}
+    \begin{itemize}
+        \item \texttt{main}: Branch principal, contendo o código estável e pronto para produção.
+        \item \texttt{feature/devops-makefile}: Branch dedicada à configuração e refinamento das regras de automação do \texttt{Makefile}.
+        \item \texttt{feature/operacoes}: Branch focada na implementação das rotinas de edição e manipulação de áudio no domínio do tempo.
+        \item \texttt{feature/tests}: Branch responsável pela criação e execução da suíte de testes unitários.
+        \item \texttt{feature/fft}: Branch para o desenvolvimento da Transformada Rápida de Fourier e filtros digitais.
+    \end{itemize}
+\end{itemize}
 
 \section{Descrição da Branch, Merge e Tag v1.0}
-TODO
+\begin{itemize}
+    \item \textbf{Gerenciamento de Branches e Pull Requests:} As atualizações desenvolvidas nas \emph{feature branches} foram integradas à \texttt{main} via \emph{Pull Requests}.
+    \item \textbf{Resolução de Conflitos de Merge:} Durante o processo de \emph{merge} entre a \texttt{main} e as branches paralelas (como a \texttt{feature/devops-makefile}), ocorreu um conflito na regra de inclusão automática de dependências (\texttt{-include \$(DEPS)}) dentro do arquivo \texttt{Makefile}. O conflito foi resolvido manualmente.
+    \item \textbf{Criação da Tag \texttt{v1.0}:} Após a validação de todas as funcionalidades, integração das branches e aprovação da suíte de testes em \texttt{feature/tests}, criou-se a marcação formal de versão (\emph{tag}) \texttt{v1.0} na branch \texttt{main}, consolidando o lançamento da primeira versão da biblioteca de áudio.
+\end{itemize}
 
 \section{Dificuldades Encontradas e Decisões de Projeto}
-TODO
+Estava Dando muitos conflitos nos começo, então decidimos criar 4 branches para cada um trabalhar sem ter risco de afetar o código de outro integrante.
 
 \section{Resultados Obtidos e Possíveis Melhorias}
-O sistema final se mostrou estável e capaz de processar e manipular arquivos sonoros de forma rápida e modular. Como melhorias futuras, destacam-se:
+Nossa ferramenta se mostrou capaz de processar e manipular arquivos sonoros de forma rápida e modular. Como melhorias futuras, destacam-se:
 \begin{itemize}
     \item Suporte nativo a múltiplos canais (áudio estéreo).
     \item Implementação de interface gráfica para visualização das formas de onda e espectro de frequência.
