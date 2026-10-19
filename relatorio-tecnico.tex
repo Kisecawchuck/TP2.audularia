@@ -1,6 +1,6 @@
 \documentclass[12pt, a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[brazil]{babel}
+\usepackage[brazilian]{babel}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{hyperref}
 \usepackage{listings}
@@ -21,16 +21,15 @@
     captionpos=b
 }
 
-\title{\textbf{Relatório Técnico: Sistema de Processamento de Áudio (\texttt{audularia})}}
-\author{Ezequiel Gomes de Carvalho\\Lucas Pires da Silva\\TODO\\TODO}}
-\date{\today}
+\title{\textbf{MAC0216 --- Técnicas de Programação\\Relatório Técnico: Sistema de Processamento de Áudio (\texttt{audularia})}}
+\author{Ezequiel Gomes de Carvalho\\Lucas Pires da Silva\\
+    Igor Nascimento Silva -- 17076671\\
+    TODO}
+\date{\textit{\small{\today}}}
 
 \begin{document}
 
 \maketitle
-
-\tableofcontents
-\newpage
 
 \section{Descrição do Problema e do Domínio Escolhido}
 O projeto consiste em uma biblioteca em linguagem C desenvolvida para o processamento, conversão e manipulação de arquivos de áudio. O objetivo principal é permitir carregar, alterar suas propriedades  e aplicar filtragens no domínio da frequência utilizando a Transformada Rápida de Fourier (FFT).
@@ -51,8 +50,8 @@ Os módulos estão divididos da seguinte forma:
 \begin{enumerate}
     \item \textbf{\texttt{audio} (\texttt{audio.h} / \texttt{audio.c}):} Gerencia a estrutura do áudio, alocação de memória e conversão de formatos (WAV, MP3 e RAW).
     \item \textbf{\texttt{operacoes} (\texttt{operacoes.h} / \texttt{operacoes.c}):} Implementa edições diretas nas amostras, como mudança de intensidade (volume), velocidade, inversão, corte e mixagem de dois áudios.
-    \item \textbf{\texttt{fft} (\texttt{fft.h} / \texttt{fft.c}):} TODO
-    \item \textbf{\texttt{fft\_audio} (\texttt{fft\_audio.h} / \texttt{fft\_audio.c}):} TODO
+    \item \textbf{\texttt{fft} (\texttt{fft.h} / \texttt{fft.c}):} Implementa filtragens, análise espectral e janelamento com fft Radix-2 DIT.
+    \item \textbf{\texttt{fft\_audio} (\texttt{fft\_audio.h} / \texttt{fft\_audio.c}):} Ponte entre domínio da frequência (\texttt{double complex}) para o tipo audio (\texttt{double}).
 \end{enumerate}
 
 \section{Descrição da API Pública}
@@ -132,7 +131,7 @@ Os testes da biblioteca foram implementados de forma automatizada no módulo \te
     \item \textbf{Análise Espectral (\texttt{test\_fft\_analise}):}
     \begin{itemize}
         \item Cálculo de magnitude (\texttt{fft\_magnitude}) e potência (\texttt{fft\_power}) com vetores complexos de teste (ex: $3 + 4i$).
-        \item Mapeamento correto de frequências por \emph{bin} (\texttt{fft\_bin_frequency}), testando Nyquist, frequências negativas para $k > N/2$ e limites fora do intervalo.
+        \item Mapeamento correto de frequências por \emph{bin} (\texttt{fft\_bin\_frequency}), testando Nyquist, frequências negativas para $k > N/2$ e limites fora do intervalo.
         \item Identificação da frequência de pico (\texttt{fft\_peak\_frequency}) em uma senoide sobreposta a um sinal contínuo (DC).
     \end{itemize}
 
