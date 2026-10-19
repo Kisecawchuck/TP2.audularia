@@ -31,8 +31,8 @@ Audio *criar_audio(char *filename, double sample_rate) {
 
     audio->filename = filename;
     audio->sample_rate = sample_rate;
-    audio->amostras = NULL;
     audio->tamanho = 0;
+    carregar_amostras(audio);
 
     return audio;
 }
