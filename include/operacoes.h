@@ -42,25 +42,6 @@ int inverter_audio(Audio *audio);
 */
 int alterar_intensidade(Audio *audio, double ganho);
 
-// documenta mixar_audio
-/**
- * @brief Mixa (junta) dois áudios em um novo áudio
- * @param *audio1 Um ponteiro para um áudio
- * @param *audio2 Um ponteiro para um áudoo
- * @param ganho_audio1 ganho do audio1 na mixagem final
- * @param ganho_audio2 ganho do audio2 na mixagem final
- * @param ini_ad1 segundo de inicio do audio1 na mixagem final
- * @param ini_ad2 segundo de inicio do audio2 na mixagem final
- * @param duracao duracao total em segundos da mixagem final 
- * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
- * @pre audio->amostras != NULL
- * @pre ganho > 0.0
- * @post O objeto áudio mixado agora representa um áudio que contém
- * audio1 e audio2
-*/
-int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, double ganho_audio1, double ganho_audio2, double ini_ad1, 
-        double ini_ad2, double duracao);
-
 // documenta cortar_audio
 /**
  * @brief Corta o audio em apenas uma parte dele
