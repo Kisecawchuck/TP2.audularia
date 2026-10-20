@@ -1,9 +1,13 @@
 \documentclass[12pt, a4paper]{article}
-\usepackage[utf8]{inputenc}
+
 \usepackage[brazilian]{babel}
-\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{hyperref}
+\usepackage{tgschola}
+
 \usepackage{listings}
+\usepackage[margin=2.5cm]{geometry}
 \usepackage{xcolor}
 \usepackage{graphicx}
 
@@ -21,20 +25,21 @@
     captionpos=b
 }
 
-\title{\textbf{MAC0216 --- Técnicas de Programação\\Relatório Técnico: Sistema de Processamento de Áudio (\texttt{audularia})}}
+\title{MAC0216 --- Técnicas de Programação\\Relatório Técnico: Sistema de Processamento de Áudio (\texttt{audularia})}
 \author{
     Ezequiel Gomes de Carvalho -- 15510880\\
     Lucas Pires da Silva -- 16885060\\
     Igor Nascimento Silva -- 17076671\\
-    TODO}
+    Miguel da Silva Damasceno -- 17838677
+}
 \date{\textit{\small{\today}}}
 
 \begin{document}
 
 \maketitle
 
-\section{Descrição do Problema e do Domínio Escolhido}
-O projeto consiste em uma biblioteca em linguagem C desenvolvida para o processamento, conversão e manipulação de arquivos de áudio. O objetivo principal é permitir carregar, alterar suas propriedades  e aplicar filtragens no domínio da frequência utilizando a Transformada Rápida de Fourier (FFT).
+\section{Introdução}
+O projeto consiste em uma biblioteca em linguagem C desenvolvida para o processamento, conversão e manipulação de arquivos de áudio. O objetivo principal é permitir carregar, alterar suas propriedades  e aplicar filtragens no domínio da frequência utilizando a Transformada Rápida de Fourier (FFT). O Github do projeto e o vídeo de demonstração estão disponíveis em \href{https://github.com/Kisecawchuck/TP2.audularia}{Kisecawchuck/TP2.audularia} e \href{https://sortilegio.neocities.org/2026ii/MAC0216/}{Vídeo de Demonstração}.
 
 \section{Arquitetura do Software}
 A arquitetura do projeto é dividida em módulos independentes organizados em pastas:
@@ -151,10 +156,10 @@ Os testes da biblioteca foram implementados de forma automatizada no módulo \te
     \end{itemize}
 \end{enumerate}
 
-Todos os testes executaram com sucesso, exibindo a mensagem \texttt{"fft: OK"} ao término da bateria.
+Todos os testes executaram com sucesso, exibindo a mensagem \texttt{"audio: OK"}, \texttt{"operacoes: OK"}, \texttt{"fft: OK"} ao término da bateria.
 
 \section{Exemplo de Teste que Inicialmente Falhou e Posterior Correção}
-TODO
+Inicialmente, a função \texttt não restringia os valores aceitos para a taxa de amostragem, permitindo inclusive a passagem de valores negativos. Essa ausência de validação poderia ocasionar erros no processamento e uso indevido de memória. O problema foi identificado durante a execução dos testes de cobertura e corrigido com a implementação de uma verificação da validade da taxa de amostragem.
 
 \section{Estratégia de Versionamento Utilizando Git}
 O controle de versão do projeto foi estruturado utilizando o \texttt{Git} e hospedado no GitHub no repositório \texttt{TP2.audularia}. A estratégia adotada baseou-se em desenvolvimento modular por funcionalidades (\emph{feature branches}), garantindo isolamento entre o código estável e as novas implementações.
