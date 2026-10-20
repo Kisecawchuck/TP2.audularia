@@ -17,8 +17,9 @@ int imprimir_amostras(Audio *audio) {
 }
 
 
-int salvar_amostras(Audio *audio, char *out) {
-    if (!audio || !audio->amostras || audio->tamanho == 0 || audio->sample_rate || !out) {
+int salvar_amostras(const Audio *audio, const char *out) {
+    if (!audio || !audio->amostras || audio->tamanho == 0
+            || audio->sample_rate <= 0.0 || !out) {
         fprintf(stderr, "salvar_amostras: ERRO, argumentos inválidos.\n");
         return 1;
     }

@@ -62,8 +62,8 @@ int carregar_amostras(Audio *audio) {
 
     char cmd[1024];
     int erro = snprintf(cmd, sizeof(cmd),
-            "ffmpeg -v error -i '%s' -f s16le -ac 1 -",
-            audio->filename);
+            "ffmpeg -v error -i '%s' -vn -ar '%.0f' -f s16le -ac 1 -",
+            audio->filename, audio->sample_rate);
 
     if (erro < 0 || (size_t) erro >= sizeof(cmd)) {
         fprintf(stderr, "carregar_amostras: ERRO, comando muito longo\n");
@@ -78,8 +78,6 @@ int carregar_amostras(Audio *audio) {
 
     size_t capacidade = 4096;
     size_t n = 0;
-    int16_t buffer[4096];
-
     double *amostras = malloc(capacidade * sizeof(*amostras));
     if (!amostras) {
         fprintf(stderr, "carregar_amostras: ERRO, falha ao alocar amostras.\n");
@@ -87,13 +85,13 @@ int carregar_amostras(Audio *audio) {
         return 4;
     }
 
+    int16_t buffer[4096];
     size_t lidos;
-    while ((lidos = fread(buffer, sizeof(char), 4096, pipein)) > 0) {
+    while ((lidos = fread(buffer, sizeof(buffer[0]), 4096, pipein)) > 0) {
         if (n + lidos > capacidade) {
-            size_t nova_capacidade = capacidade;
-            while (nova_capacidade < n + lidos)
-                nova_capacidade *= 2;
-            double *tmp = realloc(amostras, nova_capacidade * sizeof(double));
+            while (capacidade < n + lidos)
+                capacidade *= 2;
+            double *tmp = realloc(amostras, capacidade * sizeof(double));
 
             if (!tmp) {
                 free(amostras);
@@ -103,7 +101,6 @@ int carregar_amostras(Audio *audio) {
             }
 
             amostras = tmp;
-            capacidade = nova_capacidade;
         }
 
         for (size_t i = 0; i < lidos; i++)

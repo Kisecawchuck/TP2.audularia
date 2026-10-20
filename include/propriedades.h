@@ -6,6 +6,6 @@
 // documenta imprimir_samples
 int imprimir_amostras(Audio *audio);
 // documenta salvar_arquivo_wav
-int salvar_amostras(Audio *audio, char *out);
+int salvar_amostras(const Audio *audio,const char *out);
 
 #endif
