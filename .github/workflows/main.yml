@@ -15,12 +15,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup FFmpeg
-      uses: FedericoCarboni/setup-ffmpeg@v3
-      with:
-          # Optional: Specify version (defaults to latest release)
-          ffmpeg-version: 'release' 
-          # Automatically uses GitHub token to prevent rate limiting
-          github-token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
+        ffmpeg -version
     - name: make
       run: make
     - name: make run
