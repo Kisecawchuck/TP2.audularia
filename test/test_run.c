@@ -111,55 +111,55 @@ static void test_fft_filtros(void) {
 static void test_inverter_audio() {
     /* argumentos inválidos */
     assert(inverter_audio(NULL) == 1);
-    Audio *Guitarra = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
-    Guitarra->amostras = NULL;
-    assert(inverter_audio(Guitarra) == 1);
-    destruir_audio(Guitarra);
+    Audio *Mario = criar_audio("./audio/Pururin ringtone (Welcome to the NHK) [nRpSRP0l4bo].mp3", SAMPLE_RATE);
+    Mario->amostras = NULL;
+    assert(inverter_audio(Mario) == 1);
+    destruir_audio(Mario);
 
-    Audio *Guitarra2 = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
-    assert(inverter_audio(Guitarra2) == 0);
-    destruir_audio(Guitarra2);
+    Audio *Mario2 = criar_audio("./audio/Pururin ringtone (Welcome to the NHK) [nRpSRP0l4bo].mp3", SAMPLE_RATE);
+    assert(inverter_audio(Mario2) == 0);
+    destruir_audio(Mario2);
 }
 
 static void test_cortar_audio() {
     /* argumentos inválidos */
     assert(cortar_audio(NULL, 0.0, 2.0) == 1);
-    Audio *Guitarra = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
-    assert(cortar_audio(Guitarra, -1, -1) == 1);
-    assert(cortar_audio(Guitarra, 2.0, 0.0) == 1);
-    assert(cortar_audio(Guitarra, 2.0, 2.0) == 1);
-    double tam_erro = (double) Guitarra->tamanho / SAMPLE_RATE * 10.0;
-    assert(cortar_audio(Guitarra, 0.0, tam_erro) == 1);
+    Audio *Mario = criar_audio("./audio/Pururin ringtone (Welcome to the NHK) [nRpSRP0l4bo].mp3", SAMPLE_RATE);
+    assert(cortar_audio(Mario, -1, -1) == 1);
+    assert(cortar_audio(Mario, 2.0, 0.0) == 1);
+    assert(cortar_audio(Mario, 2.0, 2.0) == 1);
+    double tam_erro = (double) Mario->tamanho / SAMPLE_RATE * 10.0;
+    assert(cortar_audio(Mario, 0.0, tam_erro) == 1);
 
-    assert(cortar_audio(Guitarra, 0.0, 2.0) == 0);
-    destruir_audio(Guitarra);
+    assert(cortar_audio(Mario, 0.0, 2.0) == 0);
+    destruir_audio(Mario);
 }
 
 static void test_alterar_intensidade() {
     /* argumentos inválidos */
     assert(alterar_intensidade(NULL, 2.0) == 1);
-    Audio *Guitarra = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
-    assert(alterar_intensidade(Guitarra, -1) == 1);
+    Audio *Mario = criar_audio("./audio/Pururin ringtone (Welcome to the NHK) [nRpSRP0l4bo].mp3", SAMPLE_RATE);
+    assert(alterar_intensidade(Mario, -1) == 1);
 
-    assert(alterar_intensidade(Guitarra, 2.0) == 0);
-    destruir_audio(Guitarra);
+    assert(alterar_intensidade(Mario, 2.0) == 0);
+    destruir_audio(Mario);
 
 }
 
 static void test_alterar_velocidade() {
     /* argumentos inválidos */
     assert(alterar_velocidade(NULL, 2.0) == 1);
-    Audio *Guitarra = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
-    assert(alterar_velocidade(Guitarra, -1) == 1);
+    Audio *Mario = criar_audio("./audio/Pururin ringtone (Welcome to the NHK) [nRpSRP0l4bo].mp3", SAMPLE_RATE);
+    assert(alterar_velocidade(Mario, -1) == 1);
 
-    assert(alterar_velocidade(Guitarra, 2.0) == 0);
+    assert(alterar_velocidade(Mario, 2.0) == 0);
 
-    destruir_audio(Guitarra);
+    destruir_audio(Mario);
 }
 
 static void test_criar_audio() {
     assert(criar_audio(NULL,SAMPLE_RATE) == NULL);
-    assert(criar_audio("../audio/Super_mario.mp3",-9) == NULL);
+    assert(criar_audio("./audio/Pururin ringtone (Welcome to the NHK) [nRpSRP0l4bo].mp3",-9) == NULL);
 }
 
 
@@ -170,7 +170,7 @@ static void test_destruir_audio() {
 static void test_carregar_amostras() {
     assert(carregar_amostras(NULL) == 1);
 
-    Audio *Mario = criar_audio("../audio/Super_mario.mp3", SAMPLE_RATE);
+    Audio *Mario = criar_audio("./audio/Pururin ringtone (Welcome to the NHK) [nRpSRP0l4bo].mp3", SAMPLE_RATE);
     Mario->filename = NULL;
     assert(carregar_amostras(Mario) == 1);
 }
