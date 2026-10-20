@@ -2,10 +2,13 @@
 #include <assert.h>
 #include <math.h>
 #include <complex.h>
+#include "audio.h"
+#include "operacoes.h"
 #include "fft.h"
 
 #define EPSILON 1e-9
 #define PI 3.14159265358979323846
+#define SAMPLE_RATE 44100
 
 #define NEAR(a, b) (fabs((a) - (b)) < EPSILON)
 
@@ -105,7 +108,89 @@ static void test_fft_filtros(void) {
     assert(fft_high_pass(X, N, sr, -1.0) != 0);
 }
 
-static void test_fft(void) {
+static void test_inverter_audio() {
+    /* argumentos inválidos */
+    assert(inverter_audio(NULL) == 1);
+    Audio *Guitarra = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
+    Guitarra->amostras = NULL;
+    assert(inverter_audio(Guitarra) == 1);
+    destruir_audio(Guitarra);
+
+    Audio *Guitarra2 = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
+    assert(inverter_audio(Guitarra2) == 0);
+    destruir_audio(Guitarra2);
+}
+
+static void test_cortar_audio() {
+    /* argumentos inválidos */
+    assert(cortar_audio(NULL, 0.0, 2.0) == 1);
+    Audio *Guitarra = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
+    assert(cortar_audio(Guitarra, -1, -1) == 1);
+    assert(cortar_audio(Guitarra, 2.0, 0.0) == 1);
+    assert(cortar_audio(Guitarra, 2.0, 2.0) == 1);
+    double tam_erro = (double) Guitarra->tamanho / SAMPLE_RATE * 10.0;
+    assert(cortar_audio(Guitarra, 0.0, tam_erro) == 1);
+
+    assert(cortar_audio(Guitarra, 0.0, 2.0) == 0);
+    destruir_audio(Guitarra);
+}
+
+static void test_alterar_intensidade() {
+    /* argumentos inválidos */
+    assert(alterar_intensidade(NULL, 2.0) == 1);
+    Audio *Guitarra = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
+    assert(alterar_intensidade(Guitarra, -1) == 1);
+
+    assert(alterar_intensidade(Guitarra, 2.0) == 0);
+    destruir_audio(Guitarra);
+
+}
+
+static void test_alterar_velocidade() {
+    /* argumentos inválidos */
+    assert(alterar_velocidade(NULL, 2.0) == 1);
+    Audio *Guitarra = criar_audio("./audio/guitarra1.mp3", SAMPLE_RATE);
+    assert(alterar_velocidade(Guitarra, -1) == 1);
+
+    assert(alterar_velocidade(Guitarra, 2.0) == 0);
+
+    destruir_audio(Guitarra);
+}
+
+static void test_criar_audio() {
+    assert(criar_audio(NULL,SAMPLE_RATE) == NULL);
+    assert(criar_audio("../audio/Super_mario.mp3",-9) == NULL);
+}
+
+
+static void test_destruir_audio() {
+    assert(destruir_audio(NULL) == 1);
+}
+
+static void test_carregar_amostras() {
+    assert(carregar_amostras(NULL) == 1);
+
+    Audio *Mario = criar_audio("../audio/Super_mario.mp3", SAMPLE_RATE);
+    Mario->filename = NULL;
+    assert(carregar_amostras(Mario) == 1);
+}
+
+static void test_remover_arquivo_audio(){
+    assert(remover_arquivo_audio(NULL) == 1);
+
+    assert(remover_arquivo_audio(criar_audio("Arquivo inexistente",SAMPLE_RATE)) == 1);
+}
+
+
+static void test_audio() {
+    test_criar_audio();
+    test_destruir_audio();
+    test_carregar_amostras();
+    test_remover_arquivo_audio();
+    puts("audio: OK");
+}
+
+static void test_fft() {
     test_fft_ifft();
     test_fft_analise();
     test_fft_janelas();
@@ -113,6 +198,16 @@ static void test_fft(void) {
     puts("fft: OK");
 }
 
+static void test_operacoes() {
+    test_inverter_audio();
+    test_cortar_audio();
+    test_alterar_intensidade();
+    test_alterar_velocidade();
+    puts("operacoes: OK");
+}
+
 int main() {
+    test_audio();
+    test_operacoes();
     test_fft();
 }

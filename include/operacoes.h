@@ -2,6 +2,7 @@
 #define OPERACOES_H
 
 #include "audio.h"
+// Cuidado, não usar fatores extremamente pequenos
 
 // documenta alterar_velocidade
 /**
@@ -11,7 +12,7 @@
  * @param fator Float que controla a velocidade da alteração
  * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
  * @pre audio->amostra != NULL
- * @pre fator > 0.0
+ * @pre 0.0 < fator <= 10
  * @post O vetor de amostras do áudio passado agora representa o 
  * mesmo áudio mas em velocidade diferente
  * @note fatores maiores que 1 aceleram o áudio, enquanto fatores
@@ -36,36 +37,20 @@ int inverter_audio(Audio *audio);
  * @param *p Um ponteiro para o áudio que queremos alterar
  * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
  * @pre audio->amostras != NULL
- * @pre ganho > 0.0
+ * @pre 0.0 < ganho <= 10
  * @post O vetor de amostras do áudio passado agora representa o 
  * mesmo áudio mas com o volume alterado
+ * @note ganhos entre 1 e 0 diminuem o volume final do áudio, e 
+ * ganhos maiores que 1 aumentam seu volume
 */
 int alterar_intensidade(Audio *audio, double ganho);
-
-// documenta mixar_audio
-/**
- * @brief Mixa (junta) dois áudios em um novo áudio
- * @param *audio1 Um ponteiro para um áudio
- * @param *audio2 Um ponteiro para um áudoo
- * @param ganho_audio1 ganho do audio1 na mixagem final
- * @param ganho_audio2 ganho do audio2 na mixagem final
- * @param ini_ad1 segundo de inicio do audio1 na mixagem final
- * @param ini_ad2 segundo de inicio do audio2 na mixagem final
- * @param duracao duracao total em segundos da mixagem final 
- * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
- * @pre audio->amostras != NULL
- * @pre ganho > 0.0
- * @post O objeto áudio mixado agora representa um áudio que contém
- * audio1 e audio2
-*/
-int mixar_audio(Audio *audio_mixado ,Audio *audio1, Audio *audio2, double ganho_audio1, double ganho_audio2, double ini_ad1, 
-        double ini_ad2, double duracao);
 
 // documenta cortar_audio
 /**
  * @brief Corta o audio em apenas uma parte dele
  * @param *audio Um ponteiro para um áudio
- * @param 
+ * @param segundo_inicial incio do corte
+ * @param segundo_final fim do corte
  * @return 0 se a alteração foi bem-sucedida e 1 caso contrário
  * @pre audio->amostras != NULL
  * @pre 0.0 <= segundo inicial <= audio_mixado->tamanho
