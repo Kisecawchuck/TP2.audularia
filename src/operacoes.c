@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/audio.h"
+#include "audio.h"
 
 int alterar_intensidade(Audio *audio, double ganho) {
     if (audio == NULL || audio->amostras == NULL || audio->tamanho <= 0) {

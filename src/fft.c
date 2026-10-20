@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include "../include/fft.h"
+#include "fft.h"
 
 #define PI 3.14159265358979323846
 
