@@ -13,9 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Setup FFmpeg
-      uses: federicocarboni/setup-ffmpeg@v3.1
     - uses: actions/checkout@v4
+    - name: Setup FFmpeg
+      uses: FedericoCarboni/setup-ffmpeg@v3
+      with:
+          # Optional: Specify version (defaults to latest release)
+          ffmpeg-version: 'release' 
+          # Automatically uses GitHub token to prevent rate limiting
+          github-token: ${{ github.token }}
     - name: make
       run: make
     - name: make run
